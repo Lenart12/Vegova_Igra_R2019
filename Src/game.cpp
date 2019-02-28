@@ -2,24 +2,29 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-SDL_Texture* playerTex;
-SDL_Rect* srcR, destR;
+Game::Game() {   }
 
-
-Game::Game(){
-    this->cnt = 0;
-}
 Game::~Game(){
-    this->clean();
+    SDL_DestroyWindow(this->window);
+    SDL_DestroyRenderer(this->renderer);
+    SDL_Quit();
 }
-void Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen){
-    int flags = 0;
-    if(fullscreen){
-        flags = SDL_WINDOW_FULLSCREEN;
+
+void Game::init(){
+    conf = new Conf;
+
+    if(conf->fullscreen){
+        conf->flags = SDL_WINDOW_FULLSCREEN;
     }
 
     if (SDL_Init(SDL_INIT_EVERYTHING) == 0) {
-        this->window = SDL_CreateWindow(title, xpos, ypos, width, height, flags);
+        this->window = SDL_CreateWindow(conf->title,
+                                        conf->xpos,
+                                        conf->ypos,
+                                        conf->width,
+                                        conf->height,
+                                        conf->flags);
+
         this->renderer = SDL_CreateRenderer(this->window, -1, 0);
         if (renderer) {
             SDL_SetRenderDrawColor(this->renderer, 255, 255, 255, 255);
@@ -30,10 +35,10 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
         this->running = false;
     }
 
-    SDL_Surface* tmp = IMG_Load("Texture/pahor.jpeg");
-    playerTex = SDL_CreateTextureFromSurface(this->renderer, tmp);
-    SDL_FreeSurface(tmp);
+    initTextures();
+    generateMap();
 }
+
 void Game::handleEvent(){
     SDL_Event event;
     SDL_PollEvent(&event);
@@ -49,59 +54,73 @@ void Game::handleEvent(){
     }
 }
 void Game::update(){
-    (this->cnt)++;
-    destR.h = 280;
-    destR.w = 160;
-    destR.x = cnt;
 
-    if(this->cnt > 1240){
-        this->cnt = -250;
-    }
 }
+
 void Game::render(){
-    SDL_RenderClear(this->renderer);
-    SDL_RenderCopy(this->renderer, playerTex, NULL, &destR);
     SDL_RenderPresent(this->renderer);
 }
-void Game::clean(){
-    SDL_DestroyWindow(this->window);
-    SDL_DestroyRenderer(this->renderer);
-    SDL_Quit();
+
+void Game::initTextures(){
+    Player::loadTextures(Player::texture , "Texture/ladja.png", renderer);
+    Player::loadTextures(Player::texture , "Texture/player.png", renderer);
+    
+    Enemy::loadTextures(Enemy::texture, "Texture/enemy.png", renderer);
+    
+    Trash::loadTextures(Trash::texture, "Texture/trash.png", renderer);
+
+    Animal::loadTextures(Animal::texture, "Texture/animal.png", renderer);
+
+    Texture::loadTextures(Game::worldTexture, "Texture/morje.png", renderer);
+    Texture::loadTextures(Game::worldTexture, "Texture/kopno.png", renderer);
 }
-void Game::setRunning(bool _running){
-    this->running = _running;
-}
-void Game::setCnt(int _cnt){
-    this->cnt = _cnt;
-}
-bool Game::getRunning(){
-    return this->running;
-}
-int Game::getCnt(){
-    return this->cnt;
+    
+void Game::generateMap(){
+    
 }
 
-void BaseActor::setHealth(int _health){
+void Game::Running(bool _running){
+    this->running = _running;
+}
+
+bool Game::Running(){
+    return this->running;
+}
+
+
+void BaseActor::Health(int _health){
     this->health = _health;
 }
-void BaseActor::setX(int _pos_x){
+void BaseActor::X(int _pos_x){
     this->pos_x = _pos_x;
 }
-void BaseActor::setY(int _pos_y){
+void BaseActor::Y(int _pos_y){
     this->pos_y = _pos_y;
 }
-void BaseActor::setOrientation(int _orientation){
+void BaseActor::Orientation(int _orientation){
     this->orientation = _orientation;
 }
-double BaseActor::getHealth(){
+double BaseActor::Health(){
     return this->health;
 }
-int BaseActor::getX(){
+int BaseActor::X(){
     return this->pos_x;
 }
-int BaseActor::getY(){
+int BaseActor::Y(){
     return this->pos_y;
 }
-int BaseActor::getOrientation(){
+int BaseActor::Orientation(){
     return this->orientation;
+}
+
+void Texture::loadTextures(std::list<SDL_Texture*> &texture, const char *textureLocation, SDL_Renderer *renderer){
+    SDL_Texture *tmp = IMG_LoadTexture(renderer, textureLocation);
+    texture.push_back(tmp);
+}
+
+void Player::OnSea(bool _onSea){
+    onSea = _onSea;
+}
+bool Player::OnSea(){
+    return onSea;
 }

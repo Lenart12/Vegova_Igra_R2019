@@ -1,7 +1,6 @@
 #include <iostream>
 #include <game.h>
 
-Game *game = nullptr;
 
 int main()
 {
@@ -11,14 +10,16 @@ int main()
     Uint32 frameStart;
     int frameTime;
 
-    game = new Game();
-    game->init("Izbrisi plastiko", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1240, 720, false);
+    Game *game = new Game();
+    game->init();
 
-    while(game->getRunning()){
+    while(game->Running()){
         frameStart = SDL_GetTicks();
+
         game->handleEvent();
         game->update();
         game->render();
+        
         frameTime = SDL_GetTicks() - frameStart;
 
         if(frameDelay > frameTime){

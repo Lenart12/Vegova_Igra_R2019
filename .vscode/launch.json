@@ -5,13 +5,13 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/Build/a.out",
+            "program": "${workspaceFolder}/Build/Apps/Igrica",
             "preLaunchTask": "build",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": true,
+            "externalConsole": false,
             "MIMode": "gdb",
             "setupCommands": [
                 {
