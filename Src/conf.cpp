@@ -2,10 +2,10 @@
 #include <SDL2/SDL.h>
 
 Conf::Conf(){
-    tileX = 16;
-    tileY = 16;
-    tileCntX = 80;
-    tileCntY = 50;
+    tileX = 32;
+    tileY = 32;
+    tileCntX = 40;
+    tileCntY = 25;
     title = "Izbrisi plastiko";
     xpos = SDL_WINDOWPOS_CENTERED;
     ypos = SDL_WINDOWPOS_CENTERED;
@@ -16,5 +16,5 @@ Conf::Conf(){
     enemyCnt = 5;
     trashCnt = 10;
     animalCnt = 3;
-    mapGenPasses = 15;
+    mapGenPasses = 30;
 }

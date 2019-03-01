@@ -4,9 +4,6 @@
 #include <vector>
 #include <SDL2/SDL.h>
 
-
-
-
 class Texture{
 protected:
     std::vector< SDL_Texture* > textures;

@@ -38,10 +38,12 @@ void Game::init(){
         running = false;
     }
 
-    level = new Map(conf->tileCntY, conf->tileCntX, conf->mapGenPasses);
+    level = new Map(conf->tileCntX, conf->tileCntY, 0);
 
     level->worldTexture.loadTextures("Texture/morje.png", renderer);
+    level->worldTexture.loadTextures("Texture/morje3.png", renderer);
     level->worldTexture.loadTextures("Texture/kopno.png", renderer);
+    level->worldTexture.loadTextures("Texture/kopno3.png", renderer);
 }
 
 void Game::handleEvent(){
@@ -59,7 +61,6 @@ void Game::handleEvent(){
     }
 }
 void Game::update(){
-
 }
 
 void Game::render(){
@@ -67,6 +68,8 @@ void Game::render(){
     level->render(renderer,
                   conf->tileX,
                   conf->tileY);
+    level->pass(1);
+    SDL_Delay(200);
     SDL_RenderPresent(renderer);
 }
 

@@ -13,10 +13,11 @@ private:
 
     int neighbours(int, int);
     void seed();
-    void pass(int);
+    void edgeTrim();
 protected:
     std::vector< std::vector<int> > tiles;
 public:
+    void pass(int);
     Texture worldTexture;
     Map(int, int, int);
     void render(SDL_Renderer*, int, int);
