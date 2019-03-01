@@ -69,7 +69,6 @@ void Game::render(){
                   conf->tileX,
                   conf->tileY);
     level->pass(1);
-    SDL_Delay(200);
     SDL_RenderPresent(renderer);
 }
 

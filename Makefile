@@ -20,7 +20,7 @@ $(APP_DIR)/$(TARGET): $(OBJECTS)
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $(APP_DIR)/$(TARGET) $(INCLUDE) $(LDFLAGS)
 
-.PHONY: all build clean debug release
+.PHONY: all build clean debug release windows
 
 build:
 	@mkdir -p $(APP_DIR)
@@ -31,6 +31,8 @@ debug: all
 
 release: CXXFLAGS += -O2
 release: all
+
+windows: LDFLAGS += -lmingw32 -lSDL2main -lSDL2 -mwindows
 
 clean:
 	-@rm -rvf $(OBJ_DIR)/*
