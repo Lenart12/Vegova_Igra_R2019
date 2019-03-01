@@ -23,6 +23,8 @@ public:
         trashCnt,
         animalCnt;
 
+    int mapGenPasses;
+
     Conf();
 };
 

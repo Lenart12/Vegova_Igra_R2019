@@ -1,11 +1,11 @@
 CXX      := -c++
 CXXFLAGS := -pedantic-errors -Wall -Wextra -Werror -Wno-narrowing
-LDFLAGS  := -L/usr/lib -lstdc++ -lm -lSDL2 -lSDL_image
+LDFLAGS  := -L/usr/lib -lstdc++ -lm -lSDL2_image -lSDL2 -lpthread
 BUILD    := ./Build
 OBJ_DIR  := $(BUILD)/Objects
 APP_DIR  := $(BUILD)/Apps
 TARGET   := Igrica
-INCLUDE  := -IInclude/
+INCLUDE  := -IInclude/ -I/usr/include/SDL2
 SRC      := $(wildcard Src/*.cpp)
 
 OBJECTS := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
@@ -18,7 +18,7 @@ $(OBJ_DIR)/%.o: %.cpp
 
 $(APP_DIR)/$(TARGET): $(OBJECTS)
 	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) $(INCLUDE) $(LDFLAGS) -o $(APP_DIR)/$(TARGET) $(OBJECTS)
+	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $(APP_DIR)/$(TARGET) $(INCLUDE) $(LDFLAGS)
 
 .PHONY: all build clean debug release
 

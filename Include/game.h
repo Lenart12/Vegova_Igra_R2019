@@ -2,65 +2,13 @@
 #define GAME_H
 
 #include <SDL2/SDL.h>
-#include <list>
+
+#include <vector>
+
 #include <conf.h>
+#include <map.h>
+#include <actors.h>
 
-class Texture{
-public:
-    static void loadTextures(std::list<SDL_Texture*> &texture, const char*, SDL_Renderer*);
-};
-
-class Map{
-private:
-    int neighbours();
-    int seed();
-    int pass();
-protected:
-    std::list< std::list<int> > tiles;
-};
-
-class BaseActor : public Texture{
-protected:
-    double health;
-    int pos_x;
-    int pos_y;
-    int orientation;
-public:
-    virtual void Health(int);
-    virtual void X(int);
-    virtual void Y(int);
-    virtual void Orientation(int);
-
-    virtual double Health();
-    virtual int X();
-    virtual int Y();
-    virtual int Orientation();
-};
-
-class Player : public BaseActor{
-private:
-    bool onSea;
-public:
-    static std::list<SDL_Texture*> texture;
-    void OnSea(bool);
-    bool OnSea();
-};
-
-class Enemy : public BaseActor{
-public:
-    static std::list<SDL_Texture*> texture;
-
-};
-
-class Trash : public BaseActor{
-public:
-    static std::list<SDL_Texture*> texture;
-};
-
-class Animal : public BaseActor{
-public:
-    static std::list<SDL_Texture*> texture;
-};
 
 class Game
 {
@@ -72,15 +20,15 @@ private:
     Map *level;
 
     Player *player;
-    std::list<Enemy*> enemies;
-    std::list<Trash*> trash;
-    std::list<Animal*> animals;
+    std::vector<Enemy*> enemies;
+    std::vector<Trash*> trash;
+    std::vector<Animal*> animals;
 
     Conf *conf;
 
 
 public:
-    static std::list<SDL_Texture*> worldTexture;
+    static std::vector<SDL_Texture*> worldTexture;
     
     Game();
     ~Game();
@@ -91,9 +39,6 @@ public:
     void update();
     void render();
     void clean();
-
-    void initTextures();
-    void generateMap();
 
     void Running(bool);
     bool Running();

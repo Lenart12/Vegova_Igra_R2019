@@ -16,4 +16,5 @@ Conf::Conf(){
     enemyCnt = 5;
     trashCnt = 10;
     animalCnt = 3;
+    mapGenPasses = 15;
 }
