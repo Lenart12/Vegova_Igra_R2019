@@ -4,8 +4,8 @@
 Conf::Conf(){
     tileX = 32;
     tileY = 32;
-    tileCntX = 40;
-    tileCntY = 25;
+    tileCntX = 55;
+    tileCntY = 35;
     title = "Izbrisi plastiko";
     xpos = SDL_WINDOWPOS_CENTERED;
     ypos = SDL_WINDOWPOS_CENTERED;

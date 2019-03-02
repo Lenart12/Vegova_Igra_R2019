@@ -8,7 +8,7 @@
 int main()
 {
     srand(time(0));
-    const int FPS = 10;
+    const int FPS = 5;
     const int frameDelay = 1000 / FPS;
 
     Uint32 frameStart;

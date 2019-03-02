@@ -8,38 +8,40 @@ protected:
     double health;
     int pos_x;
     int pos_y;
-    int orientation;
 public:
+    BaseActor(int, int);
+
     virtual void Health(int);
     virtual void X(int);
     virtual void Y(int);
-    virtual void Orientation(int);
 
     virtual double Health();
     virtual int X();
     virtual int Y();
-    virtual int Orientation();
+
+    virtual void render(SDL_Renderer*, int)=0;
 };
 
 class Player : public BaseActor{
-private:
-    bool onSea;
-    static Texture texture;
 public:
-    void OnSea(bool);
-    bool OnSea();
+    static Texture texture;
+    Player(int startX, int startY) : BaseActor(startX, startY) { };
+    void render(SDL_Renderer*, int);
 };
 
 class Enemy : public BaseActor{
+private:
     static Texture texture;
 
 };
 
 class Trash : public BaseActor{
+private:
     static Texture texture;
 };
 
 class Animal : public BaseActor{
+private:
     static Texture texture;
 };
 

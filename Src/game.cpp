@@ -38,12 +38,18 @@ void Game::init(){
         running = false;
     }
 
-    level = new Map(conf->tileCntX, conf->tileCntY, 0);
+    level = new Map(conf->tileCntX, conf->tileCntY, conf->mapGenPasses);
+    player = new Player(0, 0);
 
     level->worldTexture.loadTextures("Texture/morje.png", renderer);
     level->worldTexture.loadTextures("Texture/morje3.png", renderer);
     level->worldTexture.loadTextures("Texture/kopno.png", renderer);
     level->worldTexture.loadTextures("Texture/kopno3.png", renderer);
+    level->worldTexture.loadTextures("Texture/rakec1.png", renderer);
+    level->worldTexture.loadTextures("Texture/rakec2.png", renderer);
+
+    player->texture.loadTextures("Texture/ladja.png", renderer);
+    player->texture.loadTextures("Texture/player.png", renderer);
 }
 
 void Game::handleEvent(){
@@ -61,14 +67,14 @@ void Game::handleEvent(){
     }
 }
 void Game::update(){
+    // player->X(rand()%conf->tileCntX);
+    // player->Y(rand()%conf->tileCntY);
 }
 
 void Game::render(){
     SDL_RenderClear(renderer);
-    level->render(renderer,
-                  conf->tileX,
-                  conf->tileY);
-    level->pass(1);
+    level->render(renderer);
+    player->render(renderer, 0);
     SDL_RenderPresent(renderer);
 }
 

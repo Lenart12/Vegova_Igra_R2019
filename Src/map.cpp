@@ -1,6 +1,9 @@
 #include <map.h>
+#include <conf.h>
 
 #include <cstdlib>
+
+Texture Map::worldTexture;
 
 Map::Map(int _w, int _h, int passes){
     w = _w;
@@ -8,6 +11,7 @@ Map::Map(int _w, int _h, int passes){
     seed();
     edgeTrim();
     pass(passes);
+    populate();
 }
 
 bool inBounds(int x, int y, int w, int h){
@@ -53,6 +57,11 @@ void Map::edgeTrim(){
     }    
 }
 
+void Map::populate(){
+    for(int x = 0; x < w; x++)
+        for(int y = 0; y < h; y++)
+            tiles.at(x).at(y) = (tiles.at(x).at(y) == 1 && rand() % 100 < 10) ? 2 : tiles.at(x).at(y); 
+}
 
 void Map::pass(int passes){
     while(passes-- != 0)
@@ -72,8 +81,14 @@ void Map::pass(int passes){
     }
 }
 
-void Map::render(SDL_Renderer *renderer, int tileX, int tileY){
+void Map::render(SDL_Renderer *renderer){
+    Conf conf;
+
     SDL_Rect Drect;
+    int tileX = conf.tileX,
+        tileY = conf.tileY;
+    
+
     Drect.w = tileX;
     Drect.h = tileY;
     for(int x = 0; x < w; x++){
@@ -81,8 +96,34 @@ void Map::render(SDL_Renderer *renderer, int tileX, int tileY){
         for(int y = 0; y < h; y++){
             Drect.y = y * tileY;
             int type = tiles.at(x).at(y);
-            type = (type == 1) ? 2 : 0;
-            type += rand() % 2;
+            switch (type){
+                case 0:
+                    type = 0 + (rand() % 100 < 33) ? 1 : 0;
+                    break;
+                case 1:{
+                    int r = rand() % 100;
+                    if(r < 33)
+                        type = 2;
+                    else if (r < 66){
+                        type = 4;
+                        SDL_Texture *tex = worldTexture.getTexture(2);
+                        SDL_RenderCopy(renderer,
+                           tex,
+                           NULL, &Drect);
+                    }
+                    else{
+                        type = 5;
+                        SDL_Texture *tex = worldTexture.getTexture(2);
+                        SDL_RenderCopy(renderer,
+                           tex,
+                           NULL, &Drect);
+                    }  
+                    break;
+                }
+                case 2:
+                    type = 3;
+                    break;
+            }
             SDL_Texture *tex = worldTexture.getTexture(type);
             SDL_RenderCopy(renderer,
                            tex,

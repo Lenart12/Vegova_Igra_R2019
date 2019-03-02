@@ -10,17 +10,17 @@ class Map{
 private:
     int w, h;
 
-
     int neighbours(int, int);
     void seed();
     void edgeTrim();
+    void populate();
+    void pass(int);
 protected:
     std::vector< std::vector<int> > tiles;
 public:
-    void pass(int);
-    Texture worldTexture;
+    static Texture worldTexture;
     Map(int, int, int);
-    void render(SDL_Renderer*, int, int);
+    void render(SDL_Renderer*);
 };
 
 #endif

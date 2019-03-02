@@ -4,7 +4,7 @@
         {
             "label": "build and run ",
             "type": "shell",
-            "command": "make clean debug && Build/Apps/Igrica",
+            "command": "make debug && Build/Apps/Igrica",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -14,7 +14,7 @@
         {
             "label": "build",
             "type": "shell",
-            "command": "make clean debug ",
+            "command": "make debug ",
             "problemMatcher": "$gcc"
         },
         {
