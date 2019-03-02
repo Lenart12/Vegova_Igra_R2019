@@ -7,7 +7,7 @@
 
 #include <conf.h>
 #include <map.h>
-#include <actors.h>
+#include <entities.h>
 
 
 class Game
@@ -19,10 +19,7 @@ private:
 
     Map *level;
 
-    Player *player;
-    std::vector<Enemy*> enemies;
-    std::vector<Trash*> trash;
-    std::vector<Animal*> animals;
+    Entities *entities;
 
     Conf *conf;
 

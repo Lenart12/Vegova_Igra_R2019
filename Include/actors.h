@@ -2,47 +2,49 @@
 #define ACTORS_H
 
 #include <texture.h>
+#include <map.h>
 
 class BaseActor{
 protected:
-    double health;
     int pos_x;
     int pos_y;
+    int textureIndex;
 public:
     BaseActor(int, int);
 
-    virtual void Health(int);
     virtual void X(int);
     virtual void Y(int);
+    virtual void TextureIndex(int);
 
-    virtual double Health();
     virtual int X();
     virtual int Y();
+    virtual int TextureIndex();
 
-    virtual void render(SDL_Renderer*, int)=0;
+    virtual void update(Map*)=0;
 };
 
 class Player : public BaseActor{
 public:
-    static Texture texture;
     Player(int startX, int startY) : BaseActor(startX, startY) { };
-    void render(SDL_Renderer*, int);
+    virtual void update(Map*);
 };
 
 class Enemy : public BaseActor{
-private:
-    static Texture texture;
-
+public:
+    Enemy(int startX, int startY) : BaseActor(startX, startY) { };
+    virtual void update(Map*);
 };
 
 class Trash : public BaseActor{
-private:
-    static Texture texture;
+public:
+    Trash(int startX, int startY) : BaseActor(startX, startY) { };
+    virtual void update(Map*);
 };
 
 class Animal : public BaseActor{
-private:
-    static Texture texture;
+public:
+    Animal(int startX, int startY) : BaseActor(startX, startY) { };
+    virtual void update(Map*);
 };
 
 #endif // ACTORS_H

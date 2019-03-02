@@ -2,19 +2,25 @@
 #include <conf.h>
 
 #include <cstdlib>
+#include <algorithm>
 
 Texture Map::worldTexture;
 
-Map::Map(int _w, int _h, int passes){
+Map::Map(int _w, int _h, int passes, SDL_Renderer *renderer){
     w = _w;
     h = _h;
     seed();
     edgeTrim();
     pass(passes);
     populate();
+
+    worldTexture.loadTextures("Texture/morje1.png", renderer);
+    worldTexture.loadTextures("Texture/morje2.png", renderer);
+    worldTexture.loadTextures("Texture/kopno1.png", renderer);
+    worldTexture.loadTextures("Texture/kopno2.png", renderer);
 }
 
-bool inBounds(int x, int y, int w, int h){
+bool Map::inBounds(int x, int y){
     return (x >= 0 && x < w && y >= 0 && y < h);
 }
 
@@ -24,14 +30,14 @@ int Map::neighbours(int x , int y){
     int ym1 = y - 1;
     int yp1 = y + 1;
     int neighbours = 0;
-    if(inBounds(xm1, ym1, w, h) && tiles.at(xm1).at(ym1) == 1) neighbours++;
-    if(inBounds(xm1, y, w, h) && tiles.at(xm1).at(y) == 1) neighbours++;
-    if(inBounds(xm1, yp1, w, h) && tiles.at(xm1).at(yp1) == 1) neighbours++;
-    if(inBounds(x, ym1, w, h) && tiles.at(x).at(ym1) == 1) neighbours++;
-    if(inBounds(x, yp1, w, h) && tiles.at(x).at(yp1) == 1) neighbours++;
-    if(inBounds(xp1, ym1, w, h) && tiles.at(xp1).at(ym1) == 1) neighbours++;
-    if(inBounds(xp1, y, w, h) && tiles.at(xp1).at(y) == 1) neighbours++;
-    if(inBounds(xp1, yp1, w, h) && tiles.at(xp1).at(yp1) == 1) neighbours++;
+    if(inBounds(xm1, ym1) && tiles.at(xm1).at(ym1) == 1) neighbours++;
+    if(inBounds(xm1, y) && tiles.at(xm1).at(y) == 1) neighbours++;
+    if(inBounds(xm1, yp1) && tiles.at(xm1).at(yp1) == 1) neighbours++;
+    if(inBounds(x, ym1) && tiles.at(x).at(ym1) == 1) neighbours++;
+    if(inBounds(x, yp1) && tiles.at(x).at(yp1) == 1) neighbours++;
+    if(inBounds(xp1, ym1) && tiles.at(xp1).at(ym1) == 1) neighbours++;
+    if(inBounds(xp1, y) && tiles.at(xp1).at(y) == 1) neighbours++;
+    if(inBounds(xp1, yp1) && tiles.at(xp1).at(yp1) == 1) neighbours++;
 
     return neighbours;
 }
@@ -82,52 +88,59 @@ void Map::pass(int passes){
 }
 
 void Map::render(SDL_Renderer *renderer){
-    Conf conf;
-
-    SDL_Rect Drect;
-    int tileX = conf.tileX,
-        tileY = conf.tileY;
-    
-
-    Drect.w = tileX;
-    Drect.h = tileY;
     for(int x = 0; x < w; x++){
-        Drect.x = x * tileX;
         for(int y = 0; y < h; y++){
-            Drect.y = y * tileY;
             int type = tiles.at(x).at(y);
             switch (type){
                 case 0:
                     type = 0 + (rand() % 100 < 33) ? 1 : 0;
                     break;
-                case 1:{
-                    int r = rand() % 100;
-                    if(r < 33)
-                        type = 2;
-                    else if (r < 66){
-                        type = 4;
-                        SDL_Texture *tex = worldTexture.getTexture(2);
-                        SDL_RenderCopy(renderer,
-                           tex,
-                           NULL, &Drect);
-                    }
-                    else{
-                        type = 5;
-                        SDL_Texture *tex = worldTexture.getTexture(2);
-                        SDL_RenderCopy(renderer,
-                           tex,
-                           NULL, &Drect);
-                    }  
+                case 1:
+                    type = 2;
                     break;
-                }
                 case 2:
                     type = 3;
                     break;
             }
             SDL_Texture *tex = worldTexture.getTexture(type);
-            SDL_RenderCopy(renderer,
-                           tex,
-                           NULL, &Drect);
+            worldTexture.renderTile(x, y, tex, renderer);
         }
     }
+}
+
+void Map::randomTile(int type, int &x, int &y){
+    int tX, tY;
+    while(true){
+        tX = rand() % w;
+        tY = rand() % h;
+        if(tiles.at(tX).at(tY) == type){
+            x = tX;
+            y = tY;
+            break;
+        }
+    }
+}
+
+void Map::randomTile(int pos_x, int pos_y, int &x, int &y){
+    int type = tiles.at(pos_x).at(pos_y);
+
+    std::vector<SDL_Point> possibleTiles;
+    SDL_Point tmp;
+    for(int iX = pos_x - 1; iX <= pos_x + 1; iX++){
+        for(int iY = pos_y - 1; iY <= pos_y + 1; iY++){
+            if(inBounds(iX, iY) && tiles.at(iX).at(iY) == type){
+                tmp.x = iX;
+                tmp.y = iY;
+                possibleTiles.push_back(tmp);
+            }
+        }
+    }
+    std::random_shuffle(possibleTiles.begin(), possibleTiles.end());
+
+    x = possibleTiles.at(0).x;
+    y = possibleTiles.at(0).y;
+}
+
+int Map::Type(int pos_x, int pos_y){
+    return tiles.at(pos_x).at(pos_y);
 }

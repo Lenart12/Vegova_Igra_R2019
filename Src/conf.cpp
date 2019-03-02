@@ -2,10 +2,11 @@
 #include <SDL2/SDL.h>
 
 Conf::Conf(){
+    gameFps = 10;
     tileX = 32;
     tileY = 32;
-    tileCntX = 55;
-    tileCntY = 35;
+    tileCntX = 25;
+    tileCntY = 25;
     title = "Izbrisi plastiko";
     xpos = SDL_WINDOWPOS_CENTERED;
     ypos = SDL_WINDOWPOS_CENTERED;

@@ -1,5 +1,6 @@
 #include <game.h>
 
+#include <iostream>
 #include <SDL2/SDL_image.h>
 
 Game::Game() { 
@@ -28,53 +29,59 @@ void Game::init(){
                                         conf->height,
                                         conf->flags);
 
-        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-        if (renderer) {
-            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        if(window != NULL){
+            renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+            if (renderer) {
+                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                running = true;
+            }
+            else{
+                std::cout << "Failed to create Renderer: " << SDL_GetError();
+                running = false;
+            }
         }
-        running = true;
+        else{
+            std::cout << "Failed to create Window: " << SDL_GetError();
+            running = false;
+        }
     }
     else {
+        std::cout << "Failed to init SDL: " << SDL_GetError();
         running = false;
     }
 
-    level = new Map(conf->tileCntX, conf->tileCntY, conf->mapGenPasses);
-    player = new Player(0, 0);
-
-    level->worldTexture.loadTextures("Texture/morje.png", renderer);
-    level->worldTexture.loadTextures("Texture/morje3.png", renderer);
-    level->worldTexture.loadTextures("Texture/kopno.png", renderer);
-    level->worldTexture.loadTextures("Texture/kopno3.png", renderer);
-    level->worldTexture.loadTextures("Texture/rakec1.png", renderer);
-    level->worldTexture.loadTextures("Texture/rakec2.png", renderer);
-
-    player->texture.loadTextures("Texture/ladja.png", renderer);
-    player->texture.loadTextures("Texture/player.png", renderer);
+    if(running){
+        level = new Map(conf->tileCntX, conf->tileCntY, conf->mapGenPasses, renderer);
+        entities = new Entities(conf->enemyCnt, conf->trashCnt, conf->animalCnt, level, renderer);
+    }
 }
 
 void Game::handleEvent(){
     SDL_Event event;
-    SDL_PollEvent(&event);
+    while(SDL_PollEvent(&event)){
+        if(event.type == SDL_QUIT){
+                running = false;
+        }
+        else if(event.type == SDL_KEYDOWN){
+            switch(event.key.keysym.sym){
+                case SDLK_w: entities->move("p", 0, -1); break;
+                case SDLK_a: entities->move("p", -1, 0); break;
+                case SDLK_s: entities->move("p", 0, 1); break;
+                case SDLK_d: entities->move("p", 1, 0); break;
 
-    switch (event.type)
-    {
-        case SDL_QUIT:
-            running = false;
-            break;
-    
-        default:
-            break;
+                case SDLK_ESCAPE: delete this; break;
+            }
+        }
     }
 }
 void Game::update(){
-    // player->X(rand()%conf->tileCntX);
-    // player->Y(rand()%conf->tileCntY);
+    entities->update(level);
 }
 
 void Game::render(){
     SDL_RenderClear(renderer);
     level->render(renderer);
-    player->render(renderer, 0);
+    entities->render(renderer);
     SDL_RenderPresent(renderer);
 }
 

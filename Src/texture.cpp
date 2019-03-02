@@ -1,10 +1,17 @@
 #include <texture.h>
+#include <conf.h>
 
+#include <iostream>
 #include <SDL2/SDL_image.h>
 
 void Texture::loadTextures(const char *textureLocation, SDL_Renderer *renderer){
     SDL_Texture *tmp = IMG_LoadTexture(renderer, textureLocation);
-    textures.push_back(tmp);
+    if(tmp != NULL)
+        textures.push_back(tmp);
+    else {
+        textures.push_back(tmp);
+        std::cout << "Cant load texture: " << textureLocation << std::endl;
+    }
 }
 
 SDL_Texture* Texture::getTexture(int index){
@@ -25,4 +32,16 @@ SDL_Texture* Texture::getTexture(int index){
 Texture::~Texture(){
     for(std::vector< SDL_Texture* > :: iterator i = textures.begin(); i != textures.end(); i++)
         SDL_DestroyTexture(*i);
+}
+
+void Texture::renderTile(int pos_x, int pos_y, SDL_Texture *tex, SDL_Renderer *renderer){
+    Conf conf;
+    SDL_Rect Drect;
+    Drect.x = pos_x * conf.tileX;
+    Drect.y = pos_y * conf.tileY;
+    Drect.w = conf.tileX;
+    Drect.h = conf.tileY;
+    SDL_RenderCopy(renderer,
+                    tex,
+                    NULL, &Drect);
 }

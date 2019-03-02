@@ -8,13 +8,12 @@
 int main()
 {
     srand(time(0));
-    const int FPS = 5;
+    Conf conf;
+    const int FPS = conf.gameFps;
     const int frameDelay = 1000 / FPS;
 
     Uint32 frameStart;
     int frameTime;
-
-    Conf conf;
 
     Game *game = new Game();
     game->init();

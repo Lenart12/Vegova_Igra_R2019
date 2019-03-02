@@ -3,29 +3,44 @@
 
 #include <SDL2/SDL.h>
 
-void BaseActor::Health(int _health){ this->health = _health; }
 void BaseActor::X(int _pos_x) { this->pos_x = _pos_x; }
 void BaseActor::Y(int _pos_y) { this->pos_y = _pos_y; }
-double BaseActor::Health(){ return this->health; }
+void BaseActor::TextureIndex(int _textureIndex) { this->textureIndex = _textureIndex; }
 int BaseActor::X(){ return this->pos_x; }
 int BaseActor::Y(){ return this->pos_y; }
+int BaseActor::TextureIndex(){ return this->textureIndex; }
 
 BaseActor::BaseActor(int startX, int startY){
+    textureIndex = 0;
     pos_x = startX;
     pos_y = startY;
 }
 
-Texture Player::texture;
+void Player::update(Map *level) {
+    int type = level->Type(pos_x, pos_y);
+    switch (type)
+    {
+        case 0:
+            textureIndex = 2;
+            break;
+        case 1:
+            textureIndex = 0;
+        default:
+            break;
+    }
+}
 
-void Player::render(SDL_Renderer *renderer, int txtIndex){
-    Conf conf;
-    SDL_Rect Drect;
-    Drect.x = pos_x * conf.tileX;
-    Drect.y = pos_y * conf.tileY;
-    Drect.w = conf.tileX;
-    Drect.h = conf.tileY;
-    SDL_Texture *tex = Player::texture.getTexture(txtIndex);
-    SDL_RenderCopy(renderer,
-                    tex,
-                    NULL, &Drect);
+void Enemy::update(Map *level) {
+    if(rand() % 100 < 20)
+        level->randomTile(pos_x, pos_y, pos_x, pos_y);
+}
+
+void Trash::update(Map *level) {
+    if(rand() % 100 < 20)
+        level->randomTile(pos_x, pos_y, pos_x, pos_y);
+}
+
+void Animal::update(Map *level) { 
+    if(rand() % 100 < 20)
+        level->randomTile(pos_x, pos_y, pos_x, pos_y);
 }

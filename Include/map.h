@@ -15,11 +15,14 @@ private:
     void edgeTrim();
     void populate();
     void pass(int);
-protected:
+    bool inBounds(int, int);
     std::vector< std::vector<int> > tiles;
-public:
     static Texture worldTexture;
-    Map(int, int, int);
+public:
+    int Type(int, int);
+    Map(int, int, int, SDL_Renderer*);
+    void randomTile(int, int&, int&);
+    void randomTile(int, int, int&, int&);
     void render(SDL_Renderer*);
 };
 

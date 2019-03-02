@@ -3,6 +3,8 @@
 
 class Conf{
 public:
+    int gameFps;
+
     int tileX,
         tileY,
         tileCntX,
