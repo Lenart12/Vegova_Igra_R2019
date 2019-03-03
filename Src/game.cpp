@@ -1,4 +1,5 @@
 #include <game.h>
+#include <menu.h>
 
 #include <iostream>
 #include <SDL2/SDL_image.h>
@@ -51,9 +52,19 @@ void Game::init(){
     }
 
     if(running){
-        level = new Map(conf->tileCntX, conf->tileCntY, conf->mapGenPasses, renderer);
-        entities = new Entities(conf->enemyCnt, conf->trashCnt, conf->animalCnt, level, renderer);
+        hiscore = 0;
+        level = new Map(conf->tileCntX,
+                        conf->tileCntY,
+                        conf->mapGenPasses,
+                        renderer);
+        menu = new Menu(hiscore);
     }
+}
+
+
+void Game::newGame(){
+    level = new Map(conf->tileCntX, conf->tileCntY, conf->mapGenPasses, renderer);
+    entities = new Entities(conf->enemyCnt, conf->trashCnt, conf->animalCnt, level, renderer);
 }
 
 void Game::handleEvent(){
@@ -62,33 +73,39 @@ void Game::handleEvent(){
         if(event.type == SDL_QUIT){
                 running = false;
         }
-        else if(event.type == SDL_KEYDOWN){
+        else if(event.type == SDL_KEYDOWN && menu == NULL){
             switch(event.key.keysym.sym){
                 case SDLK_w: entities->move("p", 0, -1); break;
                 case SDLK_a: entities->move("p", -1, 0); break;
                 case SDLK_s: entities->move("p", 0, 1); break;
                 case SDLK_d: entities->move("p", 1, 0); break;
 
-                case SDLK_ESCAPE: delete this; break;
+                case SDLK_ESCAPE: menu = new Menu(hiscore); break;
             }
         }
     }
 }
 void Game::update(){
-    entities->update(level);
+    if(menu == NULL)
+        entities->update();
+    else
+        menu->update(this);
+    
 }
 
 void Game::render(){
     SDL_RenderClear(renderer);
     level->render(renderer);
-    entities->render(renderer);
+    if(menu == NULL){
+        entities->render(renderer);
+    }
+    else{
+        menu->render(renderer);
+    }
     SDL_RenderPresent(renderer);
 }
 
-void Game::Running(bool _running){
-    running = _running;
-}
-
-bool Game::Running(){
-    return running;
-}
+void Game::Running(bool _running){ running = _running; }
+bool Game::Running(){ return running; }
+void Game::setMenu(Menu *_menu) { menu = _menu; }
+Menu* Game::getMenu() { return menu; }

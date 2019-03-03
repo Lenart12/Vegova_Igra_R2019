@@ -23,9 +23,8 @@ void Player::update(Map *level) {
         case 0:
             textureIndex = 2;
             break;
-        case 1:
-            textureIndex = 0;
         default:
+            textureIndex = 0;
             break;
     }
 }

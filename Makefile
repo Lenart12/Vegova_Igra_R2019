@@ -1,6 +1,6 @@
 CXX      := -c++
-CXXFLAGS := -pedantic-errors -Wall -Wextra -Werror -Wno-narrowing
-LDFLAGS  := -L/usr/lib -lstdc++ -lm -lSDL2_image -lSDL2 -lpthread
+CXXFLAGS := -pedantic-errors -Wall -Wextra -Werror -Wno-narrowing -Wno-sign-compare
+LDFLAGS  := -L/usr/lib -lstdc++ -lm -lSDL2_image -l SDL2_ttf -lSDL2 -lpthread
 BUILD    := ./Build
 OBJ_DIR  := $(BUILD)/Objects
 APP_DIR  := $(BUILD)/Apps

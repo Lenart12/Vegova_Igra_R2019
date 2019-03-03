@@ -1,11 +1,15 @@
 #include <entities.h>
 #include <conf.h>
 
+#include <cmath>
 #include <iostream>
 
-Entities::Entities(int enemyCnt, int trashCnt, int animalCnt, Map *level, SDL_Renderer* renderer){
+Entities::Entities(int enemyCnt, int trashCnt, int animalCnt, Map *_level, SDL_Renderer* renderer){
     Conf conf;
     int x, y;
+
+    level = _level;
+
     level->randomTile(0, x, y);
     player = new Player(x, y);
     for(int i = 0; i < enemyCnt; i++)
@@ -26,17 +30,21 @@ Entities::Entities(int enemyCnt, int trashCnt, int animalCnt, Map *level, SDL_Re
     
     playerTexture.loadTextures("Texture/player1.png", renderer);
     playerTexture.loadTextures("Texture/player2.png", renderer);
-    playerTexture.loadTextures("Texture/ladja.png", renderer);
+    playerTexture.loadTextures("Texture/ladja1.png", renderer);
+    playerTexture.loadTextures("Texture/ladja2.png", renderer);
 
-    enemyTexture.loadTextures("Texture/enemy.png", renderer);
+    enemyTexture.loadTextures("Texture/enemy1.png", renderer);
 
     trashTexture.loadTextures("Texture/trash.png", renderer);
 
     animalTexture.loadTextures("Texture/rakec1.png", renderer);
     animalTexture.loadTextures("Texture/rakec2.png", renderer);
+
+    fog.loadTextures("Texture/fog1.png", renderer);
+    fog.loadTextures("Texture/fog2.png", renderer);
 }
 
-void Entities::update(Map* level){
+void Entities::update(){
     player->update(level);
 
     for(std::vector<Enemy*> :: iterator i = enemies.begin(); i < enemies.end(); i++)
@@ -59,6 +67,7 @@ void Entities::update(Map* level){
 
 void Entities::render(SDL_Renderer *renderer){
     SDL_Texture *tex;
+    Conf conf;
     int pos_x, pos_y,
         textureIndex;
 
@@ -67,6 +76,9 @@ void Entities::render(SDL_Renderer *renderer){
     textureIndex = player->TextureIndex();
     tex = playerTexture.getTexture(textureIndex);
     playerTexture.renderTile(pos_x, pos_y, tex, renderer);
+    if(player->ladja_x != pos_x || player->ladja_y != pos_y){
+        playerTexture.renderTile(player->ladja_x, player->ladja_y, playerTexture.getTexture(2), renderer);
+    }
 
     for(std::vector<Enemy*> :: iterator i = enemies.begin(); i < enemies.end(); i++)
     {
@@ -94,31 +106,113 @@ void Entities::render(SDL_Renderer *renderer){
         tex = animalTexture.getTexture(textureIndex);
         animalTexture.renderTile(pos_x, pos_y, tex, renderer);
     }
-}
-void Entities::checkColision(){
-    int tX, tY;
-    tX = player->X();
-    tY = player->Y();
 
-    for(std::vector<Enemy*> :: iterator i = enemies.begin(); i < enemies.end(); i++)
+    for(int x = 0; x < conf.tileCntX; x++)
     {
-        if( (*i)->X() == tX && (*i)->Y() == tY )
-            std::cout<< "Player hit enemy" << std::endl;
+        for(int y = 0; y < conf.tileCntY; y++)
+        {
+            int alpha;
+
+            alpha = sqrt(pow(x - player->X(), 2) + pow(y - player->Y(), 2)) * 32;
+            if(alpha > 255)
+                alpha = 255;
+
+            tex = fog.getTexture(rand() % 2);
+            SDL_SetTextureAlphaMod(tex, alpha);
+            fog.renderTile(x, y, tex, renderer);
+        }
+        
     }
     
-    for(std::vector<Trash*> :: iterator i = trash.begin(); i < trash.end(); i++)
-    {
-        if( (*i)->X() == tX && (*i)->Y() == tY ){
-            trash.erase(i);
-            std::cout<< "Player hit trash" << std::endl;
+}
+
+Collision::Collision(std::string _selector, int _pos_x, int _pos_y){
+    selector = _selector;
+    pos_x = _pos_x;
+    pos_y = _pos_y;
+}
+
+std::vector<Collision> Entities::listEntites(){
+    std::vector<Collision> entites;
+
+    entites.push_back(*(new Collision("p", player->X(), player->Y())));
+    int i = 0;
+    for(std::vector<Enemy*> :: iterator it = enemies.begin(); it < enemies.end(); it++){
+        auto tmp = *(it);
+        entites.push_back(*(new Collision("e" + std::to_string(i++), tmp->X(), tmp->Y())));
+    }
+    i = 0;
+    for(std::vector<Trash*> :: iterator it = trash.begin(); it < trash.end(); it++){
+        auto tmp = *(it);
+        entites.push_back(*(new Collision("t" + std::to_string(i++), tmp->X(), tmp->Y())));
+    }
+    i = 0;
+    for(std::vector<Animal*> :: iterator it = animals.begin(); it < animals.end(); it++){
+        auto tmp = *(it);
+        entites.push_back(*(new Collision("a" + std::to_string(i++), tmp->X(), tmp->Y())));
+    }
+
+    return entites;
+}
+
+void Entities::splitSelector(std::string selector, char& t1, int& i1, char& t2, int& i2){
+    t1 = selector[0];
+    selector = selector.erase(0, 1);
+    int mid = selector.find('-');
+
+    if(mid == -1){
+        if(selector.size() != 0)
+            i1 = std::stoi(selector);
+        t2 = -1;
+        i2 = -1;
+    }
+    else{
+        if(mid > 0)
+            i1 = std::stoi(selector.substr(0, mid));
+        else{
+            i1 = -1;
+        }
+        selector = selector.erase(0, mid + 1);
+        t2 = selector[0];
+        selector = selector.erase(0, 1);
+        if(selector.size() != 0){
+            i2 = std::stoi(selector);
+        }
+        else{
+            i2 = -1;
         }
     }
+}
+
+std::vector<Collision> Entities::findCollisions(){
+    std::vector<Collision> entites = listEntites();
+    std::vector<Collision> collisions;
+
+    for(int i = 0; i < entites.size(); i++){
+        for(int j = i + 1; j < entites.size(); j++){
+            if(entites.at(i).pos_x == entites.at(j).pos_x &&
+               entites.at(i).pos_y == entites.at(j).pos_y){
+                Collision tmp(entites.at(i).selector + "-" + entites.at(j).selector,
+                              entites.at(i).pos_x,
+                              entites.at(i).pos_y);
+                collisions.push_back(tmp);
+            }
+        }
+    }
+
+    return collisions;
+}
+
+void Entities::checkColision(){
+    std::vector<Collision> collisons = findCollisions();
     
-    for(std::vector<Animal*> :: iterator i = animals.begin(); i < animals.end(); i++)
-    {
-        if( (*i)->X() == tX && (*i)->Y() == tY ){
-            animals.erase(i);
-            std::cout<< "Player saved crab" << std::endl;
+    if(collisons.size() != 0){
+        for(int i = 0; i < collisons.size(); i++){
+            Collision c = collisons.at(i);
+            char t1, t2;
+            int i1, i2;
+            splitSelector(c.selector, t1, i1, t2, i2);
+            
         }
     }
 }
@@ -138,39 +232,70 @@ bool Entities::checkBounds(int targetX, int targetY){
 void Entities::move(std::string selector, int pos_x, int pos_y){
     int absX, absY;
 
-    if(selector[0] == 'p'){    // player
-        absX = player->X() + pos_x;
-        absY = player->Y() + pos_y;
+    char t1, t2;
+    int i1, i2;
+    splitSelector(selector, t1, i1, t2, i2);
+
+    if(t1 == 'p'){    // player
+        int x = player->X(),
+            y = player->Y(); 
+        absX = x + pos_x;
+        absY = y + pos_y;
         if(checkBounds(absX, absY)){
-            player->X(absX);
-            player->Y(absY);
+            int type = level->Type(x, y);
+            int desttype = level->Type(absX, absY);
+            if(type != 0 && desttype == 0){
+                if(absX != player->ladja_x ||
+                    absY != player->ladja_y)
+                    return;
+                else{
+                    player->X(absX);
+                    player->Y(absY);
+                    player->ladja_x = absX;
+                    player->ladja_y = absY;
+                }
+            }
+            else if(type == 0 && desttype != 0){
+                player->X(absX);
+                player->Y(absY);
+                player->ladja_x = x;
+                player->ladja_y = y;
+            }
+            else if(type == 0 && desttype == 0){
+                player->X(absX);
+                player->Y(absY);
+                player->ladja_x = absX;
+                player->ladja_y = absY;
+            }
+            else{
+                player->X(absX);
+                player->Y(absY);
+            }
         }
     }
     else{
-        int index = std::stoi(selector.erase(1, 1));
-        
-        if(selector[0] == 'e'){    // enemy
-            absX = enemies.at(index)->X() + pos_x;
-            absY = enemies.at(index)->Y() + pos_y;
+        if(t1 == 'e'){    // enemy
+            absX = enemies.at(i1)->X() + pos_x;
+            absY = enemies.at(i1)->Y() + pos_y;
             if(checkBounds(absX, absY)){
-                enemies.at(index)->X(absX);
-                enemies.at(index)->Y(absY);
+                enemies.at(i1)->X(absX);
+                enemies.at(i1)->Y(absY);
             }
         }
-        else if(selector[0] == 't'){    // trash
-            absX = trash.at(index)->X() + pos_x;
-            absY = trash.at(index)->Y() + pos_y;
+        else if(t1 == 't'){    // trash
+            absX = trash.at(i1)->X() + pos_x;
+            absY = trash.at(i1)->Y() + pos_y;
             if(checkBounds(absX, absY)){
-                trash.at(index)->X(absX);
-                trash.at(index)->Y(absY);
+                trash.at(i1)->X(absX);
+                trash.at(i1)->Y(absY);
             }
         }
-        else if(selector[0] == 'a'){    // animal
-            absX = animals.at(index)->X() + pos_x;
-            absY = animals.at(index)->Y() + pos_y;
+        else if(t1 == 'a'){    // animal
+            absX = animals.at(i1)->X() + pos_x;
+            absY = animals.at(i1)->Y() + pos_y;
             if(checkBounds(absX, absY)){
-                animals.at(index)->X(absX);
-                animals.at(index)->Y(absY);
+                animals.at(i1)->X(absX);
+                animals.at(i1)->Y(absY);
             }
         }
     }

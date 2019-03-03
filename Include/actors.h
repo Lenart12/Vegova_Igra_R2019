@@ -25,6 +25,8 @@ public:
 
 class Player : public BaseActor{
 public:
+    int ladja_x;
+    int ladja_y;
     Player(int startX, int startY) : BaseActor(startX, startY) { };
     virtual void update(Map*);
 };

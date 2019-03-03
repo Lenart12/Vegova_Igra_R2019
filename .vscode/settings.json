@@ -41,7 +41,13 @@
         "utility": "cpp",
         "__config": "cpp",
         "__nullptr": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "condition_variable": "cpp",
+        "deque": "cpp",
+        "functional": "cpp",
+        "memory": "cpp",
+        "mutex": "cpp",
+        "thread": "cpp"
     },
     "C_Cpp.dimInactiveRegions": false
 }

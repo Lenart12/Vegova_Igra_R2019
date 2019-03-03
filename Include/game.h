@@ -7,6 +7,7 @@
 
 #include <conf.h>
 #include <map.h>
+class Menu;
 #include <entities.h>
 
 
@@ -19,10 +20,13 @@ private:
 
     Map *level;
 
+    Menu *menu;
+
     Entities *entities;
 
     Conf *conf;
 
+    int hiscore;
 
 public:
     static std::vector<SDL_Texture*> worldTexture;
@@ -31,6 +35,7 @@ public:
     ~Game();
 
     void init();
+    void newGame();
 
     void handleEvent();
     void update();
@@ -39,6 +44,9 @@ public:
 
     void Running(bool);
     bool Running();
+
+    void setMenu(Menu*);
+    Menu* getMenu();
 };
 
 #endif
