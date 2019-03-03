@@ -53,6 +53,7 @@ void Game::init(){
 
     if(running){
         hiscore = 0;
+        dificulty = 0;
         level = new Map(conf->tileCntX,
                         conf->tileCntY,
                         conf->mapGenPasses,
@@ -64,7 +65,11 @@ void Game::init(){
 
 void Game::newGame(){
     level = new Map(conf->tileCntX, conf->tileCntY, conf->mapGenPasses, renderer);
-    entities = new Entities(conf->enemyCnt, conf->trashCnt, conf->animalCnt, level, renderer);
+    entities = new Entities(conf->enemyCnt + dificulty,
+                            conf->trashCnt + dificulty,
+                            conf->animalCnt + dificulty,
+                            conf->zaveznikCnt + dificulty,
+                            level, renderer);
 }
 
 void Game::handleEvent(){
@@ -75,10 +80,10 @@ void Game::handleEvent(){
         }
         else if(event.type == SDL_KEYDOWN && menu == NULL){
             switch(event.key.keysym.sym){
-                case SDLK_w: entities->move("p", 0, -1); break;
-                case SDLK_a: entities->move("p", -1, 0); break;
-                case SDLK_s: entities->move("p", 0, 1); break;
-                case SDLK_d: entities->move("p", 1, 0); break;
+                case SDLK_w: entities->move(0, -1); break;
+                case SDLK_a: entities->move(-1, 0); break;
+                case SDLK_s: entities->move(0, 1); break;
+                case SDLK_d: entities->move(1, 0); break;
 
                 case SDLK_ESCAPE: menu = new Menu(hiscore); break;
             }
@@ -86,8 +91,26 @@ void Game::handleEvent(){
     }
 }
 void Game::update(){
-    if(menu == NULL)
-        entities->update();
+    if(menu == NULL){
+        int ret = entities->update();
+        if(ret != -10000){
+            hiscore += ret;
+        }
+        else if(hiscore == 10001){
+            dificulty += 2;
+            delete entities;
+            entities = NULL;
+            delete level;
+            level = NULL;
+            newGame();
+        }
+        else{
+            hiscore = 0;
+            delete entities;
+            entities = NULL;
+            menu = new Menu(hiscore);
+        }
+    }
     else
         menu->update(this);
     

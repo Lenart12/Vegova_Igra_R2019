@@ -49,4 +49,10 @@ public:
     virtual void update(Map*);
 };
 
+class Zaveznik : public BaseActor{
+public:
+    Zaveznik(int startX, int startY) : BaseActor(startX, startY) { };
+    virtual void update(Map*);
+};
+
 #endif // ACTORS_H

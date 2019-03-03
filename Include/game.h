@@ -15,6 +15,7 @@ class Game
 {
 private:
     bool running;
+    int dificulty;
     SDL_Window *window;
     SDL_Renderer *renderer;
 

@@ -4,7 +4,7 @@
 #include <cmath>
 #include <iostream>
 
-Entities::Entities(int enemyCnt, int trashCnt, int animalCnt, Map *_level, SDL_Renderer* renderer){
+Entities::Entities(int enemyCnt, int trashCnt, int animalCnt, int zaveznikCnt, Map *_level, SDL_Renderer* renderer){
     Conf conf;
     int x, y;
 
@@ -27,6 +27,11 @@ Entities::Entities(int enemyCnt, int trashCnt, int animalCnt, Map *_level, SDL_R
         level->randomTile(1, x, y);
         animals.push_back(new Animal(x, y));
     }
+    for(int i = 0; i < zaveznikCnt; i++)
+    {
+        level->randomTile(rand() % 2, x, y);
+        zavezniki.push_back(new Zaveznik(x, y));
+    }
     
     playerTexture.loadTextures("Texture/player1.png", renderer);
     playerTexture.loadTextures("Texture/player2.png", renderer);
@@ -34,17 +39,24 @@ Entities::Entities(int enemyCnt, int trashCnt, int animalCnt, Map *_level, SDL_R
     playerTexture.loadTextures("Texture/ladja2.png", renderer);
 
     enemyTexture.loadTextures("Texture/enemy1.png", renderer);
+    enemyTexture.loadTextures("Texture/enemy2.png", renderer);
 
-    trashTexture.loadTextures("Texture/trash.png", renderer);
+    trashTexture.loadTextures("Texture/trash1.png", renderer);
+    trashTexture.loadTextures("Texture/trash2.png", renderer);
 
     animalTexture.loadTextures("Texture/rakec1.png", renderer);
     animalTexture.loadTextures("Texture/rakec2.png", renderer);
+
+    zaveznikTexture.loadTextures("Texture/zaveznik1.png", renderer);
+    zaveznikTexture.loadTextures("Texture/zaveznik2.png", renderer);
+    zaveznikTexture.loadTextures("Texture/zaveznik3.png", renderer);
+    zaveznikTexture.loadTextures("Texture/zaveznik4.png", renderer);
 
     fog.loadTextures("Texture/fog1.png", renderer);
     fog.loadTextures("Texture/fog2.png", renderer);
 }
 
-void Entities::update(){
+int Entities::update(){
     player->update(level);
 
     for(std::vector<Enemy*> :: iterator i = enemies.begin(); i < enemies.end(); i++)
@@ -62,7 +74,15 @@ void Entities::update(){
         (*i)->update(level);
     }
 
-    checkColision();
+    for(std::vector<Zaveznik*> :: iterator i = zavezniki.begin(); i < zavezniki.end(); i++)
+    {
+        (*i)->update(level);
+    }
+
+    if(trash.size() == 0 && animals.size() == 0 && enemies.size() == 0)
+        return -10001;
+    else
+        return checkColision();
 }
 
 void Entities::render(SDL_Renderer *renderer){
@@ -104,6 +124,15 @@ void Entities::render(SDL_Renderer *renderer){
         pos_y = (*i)->Y();
         textureIndex = (*i)->TextureIndex();
         tex = animalTexture.getTexture(textureIndex);
+        animalTexture.renderTile(pos_x, pos_y, tex, renderer);
+    }
+    
+    for(std::vector<Zaveznik*> :: iterator i = zavezniki.begin(); i < zavezniki.end(); i++)
+    {
+        pos_x = (*i)->X();
+        pos_y = (*i)->Y();
+        textureIndex = (*i)->TextureIndex();
+        tex = zaveznikTexture.getTexture(textureIndex);
         animalTexture.renderTile(pos_x, pos_y, tex, renderer);
     }
 
@@ -150,6 +179,11 @@ std::vector<Collision> Entities::listEntites(){
     for(std::vector<Animal*> :: iterator it = animals.begin(); it < animals.end(); it++){
         auto tmp = *(it);
         entites.push_back(*(new Collision("a" + std::to_string(i++), tmp->X(), tmp->Y())));
+    }
+    i = 0;
+    for(std::vector<Zaveznik*> :: iterator it = zavezniki.begin(); it < zavezniki.end(); it++){
+        auto tmp = *(it);
+        entites.push_back(*(new Collision("z" + std::to_string(i++), tmp->X(), tmp->Y())));
     }
 
     return entites;
@@ -203,7 +237,7 @@ std::vector<Collision> Entities::findCollisions(){
     return collisions;
 }
 
-void Entities::checkColision(){
+int Entities::checkColision(){
     std::vector<Collision> collisons = findCollisions();
     
     if(collisons.size() != 0){
@@ -212,9 +246,49 @@ void Entities::checkColision(){
             char t1, t2;
             int i1, i2;
             splitSelector(c.selector, t1, i1, t2, i2);
-            
+            if(t1=='p'){
+                if(t2 == 'e'){
+                    std::vector<Enemy*> :: iterator it = enemies.begin();
+                    while(i2-- != 0) it++;
+                    Enemy *e = *it;
+                    int x1, x2, y1, y2;
+                    x1 = e->X();
+                    y1 = e->Y();
+                    for(std::vector<Enemy*> :: iterator it2 = enemies.begin(); it2 != enemies.end(); it2++){
+                        e = *it;
+                        x2 = e->X();
+                        y2 = e->Y();
+                        if(x1 > x2 - 1 && x1 <= x2 + 1 &&
+                           y1 > y2 - 1 && y2 <= y2 + 1 &&
+                           x1 != x2 && y1 != y2){
+                            return -10000;
+                        }
+                    }
+                    enemies.erase(it);
+                    return 50;
+                }
+                else if(t2=='t'){
+                    std::vector<Trash*> :: iterator it = trash.begin();
+                    while(i2-- != 0) it++;
+                    trash.erase(it);
+                    return 20;
+                }
+                else if(t2=='a'){
+                    std::vector<Animal*> :: iterator it = animals.begin();
+                    while(i2-- != 0) it++;
+                    animals.erase(it);
+                    return 30;
+                }
+                else if(t2=='z'){
+                    std::vector<Zaveznik*> :: iterator it = zavezniki.begin();
+                    while(i2-- != 0) it++;
+                    zavezniki.erase(it);
+                    return -100;
+                }
+            }
         }
     }
+    return 0;
 }
 
 bool Entities::checkBounds(int targetX, int targetY){
@@ -229,74 +303,42 @@ bool Entities::checkBounds(int targetX, int targetY){
     return true;
 }
 
-void Entities::move(std::string selector, int pos_x, int pos_y){
-    int absX, absY;
+void Entities::move(int pos_x, int pos_y){
+    int absX, absY, x, y;
 
-    char t1, t2;
-    int i1, i2;
-    splitSelector(selector, t1, i1, t2, i2);
-
-    if(t1 == 'p'){    // player
-        int x = player->X(),
-            y = player->Y(); 
-        absX = x + pos_x;
-        absY = y + pos_y;
-        if(checkBounds(absX, absY)){
-            int type = level->Type(x, y);
-            int desttype = level->Type(absX, absY);
-            if(type != 0 && desttype == 0){
-                if(absX != player->ladja_x ||
-                    absY != player->ladja_y)
-                    return;
-                else{
-                    player->X(absX);
-                    player->Y(absY);
-                    player->ladja_x = absX;
-                    player->ladja_y = absY;
-                }
-            }
-            else if(type == 0 && desttype != 0){
-                player->X(absX);
-                player->Y(absY);
-                player->ladja_x = x;
-                player->ladja_y = y;
-            }
-            else if(type == 0 && desttype == 0){
+    x = player->X(),
+    y = player->Y(); 
+    absX = x + pos_x;
+    absY = y + pos_y;
+    if(checkBounds(absX, absY)){
+        int type = level->Type(x, y);
+        int desttype = level->Type(absX, absY);
+        if(type != 0 && desttype == 0){
+            if(absX != player->ladja_x ||
+                absY != player->ladja_y)
+                return;
+            else{
                 player->X(absX);
                 player->Y(absY);
                 player->ladja_x = absX;
                 player->ladja_y = absY;
             }
-            else{
-                player->X(absX);
-                player->Y(absY);
-            }
         }
-    }
-    else{
-        if(t1 == 'e'){    // enemy
-            absX = enemies.at(i1)->X() + pos_x;
-            absY = enemies.at(i1)->Y() + pos_y;
-            if(checkBounds(absX, absY)){
-                enemies.at(i1)->X(absX);
-                enemies.at(i1)->Y(absY);
-            }
+        else if(type == 0 && desttype != 0){
+            player->X(absX);
+            player->Y(absY);
+            player->ladja_x = x;
+            player->ladja_y = y;
         }
-        else if(t1 == 't'){    // trash
-            absX = trash.at(i1)->X() + pos_x;
-            absY = trash.at(i1)->Y() + pos_y;
-            if(checkBounds(absX, absY)){
-                trash.at(i1)->X(absX);
-                trash.at(i1)->Y(absY);
-            }
+        else if(type == 0 && desttype == 0){
+            player->X(absX);
+            player->Y(absY);
+            player->ladja_x = absX;
+            player->ladja_y = absY;
         }
-        else if(t1 == 'a'){    // animal
-            absX = animals.at(i1)->X() + pos_x;
-            absY = animals.at(i1)->Y() + pos_y;
-            if(checkBounds(absX, absY)){
-                animals.at(i1)->X(absX);
-                animals.at(i1)->Y(absY);
-            }
+        else{
+            player->X(absX);
+            player->Y(absY);
         }
     }
 }

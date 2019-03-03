@@ -21,11 +21,13 @@ private:
     Texture enemyTexture;
     Texture trashTexture;
     Texture animalTexture;
+    Texture zaveznikTexture;
 
     Player *player;
     std::vector<Enemy*> enemies;
     std::vector<Trash*> trash;
     std::vector<Animal*> animals;
+    std::vector<Zaveznik*> zavezniki;
 
     Map *level;
 
@@ -34,11 +36,11 @@ private:
     bool checkBounds(int, int);
     void splitSelector(std::string, char&, int&, char&, int&);
     std::vector<Collision> listEntites();
-    void checkColision();
+    int checkColision();
 public:
-    Entities(int, int, int, Map*, SDL_Renderer*);
-    void move(std::string, int, int);
-    void update();
+    Entities(int, int, int, int, Map*, SDL_Renderer*);
+    void move(int, int);
+    int update();
     std::vector<Collision> findCollisions();
     void render(SDL_Renderer*);
 };

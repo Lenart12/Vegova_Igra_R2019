@@ -23,7 +23,8 @@ public:
 
     int enemyCnt,
         trashCnt,
-        animalCnt;
+        animalCnt,
+        zaveznikCnt;
 
     int mapGenPasses;
 
