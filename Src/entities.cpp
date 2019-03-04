@@ -5,7 +5,7 @@
 #include <iostream>
 
 Entities::Entities(int enemyCnt, int trashCnt, int animalCnt, int zaveznikCnt, Map *_level, SDL_Renderer* renderer){
-    Conf conf;
+    static Conf conf;
     int x, y;
 
     level = _level;
@@ -87,7 +87,7 @@ int Entities::update(){
 
 void Entities::render(SDL_Renderer *renderer){
     SDL_Texture *tex;
-    Conf conf;
+    static Conf conf;
     int pos_x, pos_y,
         textureIndex;
 
@@ -136,21 +136,23 @@ void Entities::render(SDL_Renderer *renderer){
         animalTexture.renderTile(pos_x, pos_y, tex, renderer);
     }
 
-    // for(int x = 0; x < conf.tileCntX; x++)
-    // {
-    //     for(int y = 0; y < conf.tileCntY; y++)
-    //     {
-    //         int alpha;
+    if(conf.fog){
+        for(int x = 0; x < conf.tileCntX; x++)
+        {
+            for(int y = 0; y < conf.tileCntY; y++)
+            {
+                int alpha;
 
-    //         alpha = sqrt(pow(x - player->X(), 2) + pow(y - player->Y(), 2)) * 32;
-    //         if(alpha > 255)
-    //             alpha = 255;
+                alpha = sqrt(pow(x - player->X(), 2) + pow(y - player->Y(), 2)) * 32;
+                if(alpha > 255)
+                    alpha = 255;
 
-    //         tex = fog.getTexture(rand() % 2);
-    //         SDL_SetTextureAlphaMod(tex, alpha);
-    //         fog.renderTile(x, y, tex, renderer);
-    //     }
-    // }
+                tex = fog.getTexture(rand() % 2);
+                SDL_SetTextureAlphaMod(tex, alpha);
+                fog.renderTile(x, y, tex, renderer);
+            }
+        }
+    }
     
 }
 
@@ -291,7 +293,7 @@ int Entities::checkColision(){
 }
 
 bool Entities::checkBounds(int targetX, int targetY){
-    Conf conf;
+    static Conf conf;
 
     if(targetX < 0 ||
        targetY < 0 ||

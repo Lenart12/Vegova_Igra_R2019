@@ -1,0 +1,15 @@
+gameFps,10
+tileX,32
+tileY,32
+tileCntX,55
+tileCntY,35
+xpos,-1
+ypos,-1
+fullscreen,0
+flags,0
+enemyCnt,5
+trashCnt,10
+animalCnt,3
+zaveznikCnt,3
+mapGenPasses,30
+fog,1

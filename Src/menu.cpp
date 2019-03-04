@@ -5,7 +5,7 @@
 #include <iostream>
 
 Menu::Menu(int hiscore){
-    Conf conf;
+    static Conf conf;
     TTF_Init();
     font = TTF_OpenFont("Texture/8bitfont.ttf", 24);
 
@@ -115,7 +115,7 @@ void Menu::render(SDL_Renderer *renderer){
 void Menu::renderText(TextBlock *textBlock, SDL_Renderer *renderer){
     SDL_Surface *txtSurface = TTF_RenderText_Solid(font, textBlock->text.c_str(), textBlock->color);
     SDL_Texture *tex = SDL_CreateTextureFromSurface(renderer, txtSurface);
-    Conf conf;
+    static Conf conf;
     if(textBlock->destR != NULL){
         if(textBlock->destR->w == -1)
             textBlock->destR->w = txtSurface->w;

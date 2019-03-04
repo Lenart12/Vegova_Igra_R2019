@@ -35,7 +35,7 @@ Texture::~Texture(){
 }
 
 void Texture::renderTile(int pos_x, int pos_y, SDL_Texture *tex, SDL_Renderer *renderer){
-    Conf conf;
+    static Conf conf;
     SDL_Rect Drect;
     Drect.x = pos_x * conf.tileX;
     Drect.y = pos_y * conf.tileY;

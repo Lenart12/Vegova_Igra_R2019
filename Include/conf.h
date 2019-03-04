@@ -28,6 +28,8 @@ public:
 
     int mapGenPasses;
 
+    bool fog;
+
     Conf();
 };
 

@@ -8,7 +8,7 @@
 int main()
 {
     srand(time(0));
-    Conf conf;
+    static Conf conf;
     const int FPS = conf.gameFps;
     const int frameDelay = 1000 / FPS;
 
