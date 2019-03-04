@@ -34,42 +34,27 @@ void Player::update(Map *level) {
 void Enemy::update(Map *level) {
     if(rand() % 100 < 20){
         int x, y;
-        int type = level->Type(pos_x, pos_y);
         level->randomTile(pos_x, pos_y, x, y);
         X(x);
         Y(y);
-        if(type == 0 && textureIndex < 2)
-            textureIndex += 2;
-        else if(type != 0 && textureIndex > 1)
-            textureIndex -= 2;
     }
 }
 
 void Trash::update(Map *level) {
     if(rand() % 100 < 20){
         int x, y;
-        int type = level->Type(pos_x, pos_y);
         level->randomTile(pos_x, pos_y, x, y);
         X(x);
         Y(y);
-        if(type == 0 && textureIndex < 2)
-            textureIndex += 2;
-        else if(type != 0 && textureIndex > 1)
-            textureIndex -= 2;
     }
 }
 
 void Animal::update(Map *level) { 
     if(rand() % 100 < 20){
         int x, y;
-        int type = level->Type(pos_x, pos_y);
         level->randomTile(pos_x, pos_y, x, y);
         X(x);
         Y(y);
-        if(type == 0 && textureIndex < 2)
-            textureIndex += 2;
-        else if(type != 0 && textureIndex > 1)
-            textureIndex -= 2;
     }
 }
 

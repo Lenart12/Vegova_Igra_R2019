@@ -39,8 +39,7 @@ Menu::Menu(int hiscore){
         tmpR2->h = -1;
         tmpR2->x = -1;
         tmpR2->y = conf.height / 3 + 1 * conf.tileY;
-        const char *str = std::to_string(hiscore).insert(0, "Rezultat ").c_str();
-        TextBlock hiScore(str, tmpR2, tmpNC, tmpOC);
+        TextBlock hiScore("Rezultat " + std::to_string(hiscore), tmpR2, tmpNC, tmpOC);
         hiScore.action = -1;
         textBlocks.push_back(hiScore);
     }
@@ -69,7 +68,7 @@ Menu::~Menu(){
     TTF_Quit();
 }
 
-TextBlock::TextBlock(const char *_text, SDL_Rect *_destR, SDL_Color _nColor, SDL_Color _oColor){
+TextBlock::TextBlock(std::string _text, SDL_Rect *_destR, SDL_Color _nColor, SDL_Color _oColor){
     text = _text;
     destR = _destR;
     nColor = _nColor;
@@ -114,7 +113,7 @@ void Menu::render(SDL_Renderer *renderer){
 }
 
 void Menu::renderText(TextBlock *textBlock, SDL_Renderer *renderer){
-    SDL_Surface *txtSurface = TTF_RenderText_Solid(font, textBlock->text, textBlock->color);
+    SDL_Surface *txtSurface = TTF_RenderText_Solid(font, textBlock->text.c_str(), textBlock->color);
     SDL_Texture *tex = SDL_CreateTextureFromSurface(renderer, txtSurface);
     Conf conf;
     if(textBlock->destR != NULL){

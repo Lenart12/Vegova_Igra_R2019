@@ -150,7 +150,6 @@ void Entities::render(SDL_Renderer *renderer){
             SDL_SetTextureAlphaMod(tex, alpha);
             fog.renderTile(x, y, tex, renderer);
         }
-        
     }
     
 }

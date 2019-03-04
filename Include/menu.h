@@ -5,16 +5,17 @@ class Game;
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <string>
 #include <vector>
 
 class TextBlock{
 public:
-    const char *text;
+    std::string text;
     SDL_Rect *destR;
     SDL_Color color;
     SDL_Color nColor;
     SDL_Color oColor;
-    TextBlock(const char*, SDL_Rect*, SDL_Color, SDL_Color);
+    TextBlock(std::string, SDL_Rect*, SDL_Color, SDL_Color);
     int action;
 };
 

@@ -35,6 +35,11 @@ void Game::init(){
             if (renderer) {
                 SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
                 running = true;
+
+                if(conf->fullscreen){
+                    SDL_SetWindowFullscreen(window, conf->flags);
+                    SDL_MaximizeWindow(window);
+                }
             }
             else{
                 std::cout << "Failed to create Renderer: " << SDL_GetError();
@@ -85,7 +90,7 @@ void Game::handleEvent(){
                 case SDLK_s: entities->move(0, 1); break;
                 case SDLK_d: entities->move(1, 0); break;
 
-                case SDLK_ESCAPE: menu = new Menu(hiscore); break;
+                case SDLK_ESCAPE: menu = new Menu(hiscore); hiscore = 0; break;
             }
         }
     }
