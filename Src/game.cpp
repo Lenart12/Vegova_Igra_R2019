@@ -98,10 +98,13 @@ void Game::handleEvent(){
 void Game::update(){
     if(menu == NULL){
         int ret = entities->update();
-        if(ret != -10000){
-            hiscore += ret;
+        if(ret == -10000){
+            hiscore = 0;
+            delete entities;
+            entities = NULL;
+            menu = new Menu(hiscore);
         }
-        else if(hiscore == 10001){
+        else if(ret == -10001){
             dificulty += 2;
             delete entities;
             entities = NULL;
@@ -110,10 +113,7 @@ void Game::update(){
             newGame();
         }
         else{
-            hiscore = 0;
-            delete entities;
-            entities = NULL;
-            menu = new Menu(hiscore);
+            hiscore += ret;
         }
     }
     else

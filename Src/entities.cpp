@@ -136,21 +136,21 @@ void Entities::render(SDL_Renderer *renderer){
         animalTexture.renderTile(pos_x, pos_y, tex, renderer);
     }
 
-    for(int x = 0; x < conf.tileCntX; x++)
-    {
-        for(int y = 0; y < conf.tileCntY; y++)
-        {
-            int alpha;
+    // for(int x = 0; x < conf.tileCntX; x++)
+    // {
+    //     for(int y = 0; y < conf.tileCntY; y++)
+    //     {
+    //         int alpha;
 
-            alpha = sqrt(pow(x - player->X(), 2) + pow(y - player->Y(), 2)) * 32;
-            if(alpha > 255)
-                alpha = 255;
+    //         alpha = sqrt(pow(x - player->X(), 2) + pow(y - player->Y(), 2)) * 32;
+    //         if(alpha > 255)
+    //             alpha = 255;
 
-            tex = fog.getTexture(rand() % 2);
-            SDL_SetTextureAlphaMod(tex, alpha);
-            fog.renderTile(x, y, tex, renderer);
-        }
-    }
+    //         tex = fog.getTexture(rand() % 2);
+    //         SDL_SetTextureAlphaMod(tex, alpha);
+    //         fog.renderTile(x, y, tex, renderer);
+    //     }
+    // }
     
 }
 
