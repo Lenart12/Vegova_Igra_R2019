@@ -4,30 +4,32 @@
 #include <cmath>
 #include <iostream>
 
-Entities::Entities(int enemyCnt, int trashCnt, int animalCnt, int zaveznikCnt, Map *_level, SDL_Renderer* renderer){
+Entities::Entities(int enemyCnt, int trashCnt, int animalCnt, int zaveznikCnt, int _difficulty, Map *_level, SDL_Renderer* renderer){
     static Conf conf;
     int x, y;
 
     level = _level;
 
+    difficulty = _difficulty;
+
     level->randomTile(0, x, y);
     player = new Player(x, y);
-    for(int i = 0; i < enemyCnt; i++)
+    for(int i = 0; i < enemyCnt + difficulty; i++)
     {
         level->randomTile(1, x, y);
         enemies.push_back(new Enemy(x, y));
     }
-    for(int i = 0; i < trashCnt; i++)
+    for(int i = 0; i < trashCnt + difficulty; i++)
     {
         level->randomTile(0, x, y);
         trash.push_back(new Trash(x, y));
     }
-    for(int i = 0; i < animalCnt; i++)
+    for(int i = 0; i < animalCnt + difficulty; i++)
     {
         level->randomTile(1, x, y);
         animals.push_back(new Animal(x, y));
     }
-    for(int i = 0; i < zaveznikCnt; i++)
+    for(int i = 0; i < zaveznikCnt + difficulty; i++)
     {
         level->randomTile(rand() % 2, x, y);
         zavezniki.push_back(new Zaveznik(x, y));
@@ -62,6 +64,12 @@ int Entities::update(){
     for(std::vector<Enemy*> :: iterator i = enemies.begin(); i < enemies.end(); i++)
     {
         (*i)->update(level);
+        Enemy *e = *i;
+        int x1 = -1, y1 = -1;
+        level->randomTile(0, e->X(), e->Y(), x1, y1);
+        if(x1 != -1 && y1 != -1 && rand() % 100 < 1 + difficulty){
+            trash.push_back(new Trash(x1, y1));
+        }
     }
     
     for(std::vector<Trash*> :: iterator i = trash.begin(); i < trash.end(); i++)
@@ -143,7 +151,7 @@ void Entities::render(SDL_Renderer *renderer){
             {
                 int alpha;
 
-                alpha = sqrt(pow(x - player->X(), 2) + pow(y - player->Y(), 2)) * 32;
+                alpha = sqrt(pow(x - player->X(), 2) + pow(y - player->Y(), 2)) * conf.fogDist + (difficulty * 16);
                 if(alpha > 255)
                     alpha = 255;
 
@@ -266,25 +274,25 @@ int Entities::checkColision(){
                         }
                     }
                     enemies.erase(it);
-                    return 50;
+                    return 50 + difficulty;
                 }
                 else if(t2=='t'){
                     std::vector<Trash*> :: iterator it = trash.begin();
                     while(i2-- != 0) it++;
                     trash.erase(it);
-                    return 20;
+                    return 20 + difficulty;
                 }
                 else if(t2=='a'){
                     std::vector<Animal*> :: iterator it = animals.begin();
                     while(i2-- != 0) it++;
                     animals.erase(it);
-                    return 30;
+                    return 30 + difficulty;
                 }
                 else if(t2=='z'){
                     std::vector<Zaveznik*> :: iterator it = zavezniki.begin();
                     while(i2-- != 0) it++;
                     zavezniki.erase(it);
-                    return -100;
+                    return -100 - difficulty;
                 }
             }
         }

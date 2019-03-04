@@ -49,4 +49,5 @@ Conf::Conf(){
     zaveznikCnt = csv["zaveznikCnt"];
     mapGenPasses = csv["mapGenPasses"];
     fog = csv["fog"];
+    fogDist = csv["fogDist"];
 }

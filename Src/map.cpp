@@ -121,6 +121,28 @@ void Map::randomTile(int type, int &x, int &y){
     }
 }
 
+
+
+void Map::randomTile(int type, int pos_x, int pos_y, int &x, int &y){
+    std::vector<SDL_Point> possibleTiles;
+    SDL_Point tmp;
+    for(int iX = pos_x - 1; iX <= pos_x + 1; iX++){
+        for(int iY = pos_y - 1; iY <= pos_y + 1; iY++){
+            if(inBounds(iX, iY) && tiles.at(iX).at(iY) == type){
+                tmp.x = iX;
+                tmp.y = iY;
+                possibleTiles.push_back(tmp);
+            }
+        }
+    }
+    if(possibleTiles.size() > 0){
+        std::random_shuffle(possibleTiles.begin(), possibleTiles.end());
+
+        x = possibleTiles.at(0).x;
+        y = possibleTiles.at(0).y;
+    }
+}
+
 void Map::randomTile(int pos_x, int pos_y, int &x, int &y){
     int type = tiles.at(pos_x).at(pos_y);
 
@@ -135,10 +157,12 @@ void Map::randomTile(int pos_x, int pos_y, int &x, int &y){
             }
         }
     }
-    std::random_shuffle(possibleTiles.begin(), possibleTiles.end());
+    if(possibleTiles.size() > 0){
+        std::random_shuffle(possibleTiles.begin(), possibleTiles.end());
 
-    x = possibleTiles.at(0).x;
-    y = possibleTiles.at(0).y;
+        x = possibleTiles.at(0).x;
+        y = possibleTiles.at(0).y;
+    }
 }
 
 int Map::Type(int pos_x, int pos_y){

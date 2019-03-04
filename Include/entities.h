@@ -33,12 +33,14 @@ private:
 
     Texture fog;
 
+    int difficulty;
+
     bool checkBounds(int, int);
     void splitSelector(std::string, char&, int&, char&, int&);
     std::vector<Collision> listEntites();
     int checkColision();
 public:
-    Entities(int, int, int, int, Map*, SDL_Renderer*);
+    Entities(int, int, int, int, int, Map*, SDL_Renderer*);
     void move(int, int);
     int update();
     std::vector<Collision> findCollisions();

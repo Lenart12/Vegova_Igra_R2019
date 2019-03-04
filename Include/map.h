@@ -23,6 +23,7 @@ public:
     Map(int, int, int, SDL_Renderer*);
     void randomTile(int, int&, int&);
     void randomTile(int, int, int&, int&);
+    void randomTile(int, int, int, int&, int&);
     void render(SDL_Renderer*);
 };
 

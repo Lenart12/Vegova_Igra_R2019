@@ -29,6 +29,7 @@ public:
     int mapGenPasses;
 
     bool fog;
+    int fogDist;
 
     Conf();
 };

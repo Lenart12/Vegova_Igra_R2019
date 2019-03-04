@@ -70,10 +70,11 @@ void Game::init(){
 
 void Game::newGame(){
     level = new Map(conf->tileCntX, conf->tileCntY, conf->mapGenPasses, renderer);
-    entities = new Entities(conf->enemyCnt + dificulty,
-                            conf->trashCnt + dificulty,
-                            conf->animalCnt + dificulty,
-                            conf->zaveznikCnt + dificulty,
+    entities = new Entities(conf->enemyCnt,
+                            conf->trashCnt,
+                            conf->animalCnt,
+                            conf->zaveznikCnt,
+                            dificulty,
                             level, renderer);
 }
 
@@ -90,7 +91,10 @@ void Game::handleEvent(){
                 case SDLK_s: entities->move(0, 1); break;
                 case SDLK_d: entities->move(1, 0); break;
 
-                case SDLK_ESCAPE: menu = new Menu(hiscore); hiscore = 0; break;
+                case SDLK_ESCAPE: menu = new Menu(hiscore);
+                    hiscore = 0;
+                    dificulty = 0;
+                    break;
             }
         }
     }
@@ -100,6 +104,7 @@ void Game::update(){
         int ret = entities->update();
         if(ret == -10000){
             hiscore = 0;
+            dificulty = 0;
             delete entities;
             entities = NULL;
             menu = new Menu(hiscore);
