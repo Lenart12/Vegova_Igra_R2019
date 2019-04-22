@@ -50,4 +50,5 @@ Conf::Conf(){
     mapGenPasses = csv["mapGenPasses"];
     fog = csv["fog"];
     fogDist = csv["fogDist"];
+    gameTime = csv["gameTime"];
 }

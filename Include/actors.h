@@ -5,11 +5,11 @@
 #include <map.h>
 
 class BaseActor{
-protected:
+public:
+    int textureIndex;
     int pos_x;
     int pos_y;
-    int textureIndex;
-public:
+    BaseActor() {};
     BaseActor(int, int);
 
     virtual void X(int);
@@ -28,30 +28,35 @@ public:
     int ladja_x;
     int ladja_y;
     Player(int startX, int startY) : BaseActor(startX, startY) { };
+    Player() : BaseActor() { };
     virtual void update(Map*);
 };
 
 class Enemy : public BaseActor{
 public:
     Enemy(int startX, int startY) : BaseActor(startX, startY) { };
+    Enemy() : BaseActor() { };
     virtual void update(Map*);
 };
 
 class Trash : public BaseActor{
 public:
     Trash(int startX, int startY) : BaseActor(startX, startY) { };
+    Trash() : BaseActor() { };
     virtual void update(Map*);
 };
 
 class Animal : public BaseActor{
 public:
     Animal(int startX, int startY) : BaseActor(startX, startY) { };
+    Animal() : BaseActor() { };
     virtual void update(Map*);
 };
 
 class Zaveznik : public BaseActor{
 public:
     Zaveznik(int startX, int startY) : BaseActor(startX, startY) { };
+    Zaveznik() : BaseActor() { };
     virtual void update(Map*);
 };
 

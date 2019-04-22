@@ -31,6 +31,8 @@ public:
     bool fog;
     int fogDist;
 
+    int gameTime;
+
     Conf();
 };
 

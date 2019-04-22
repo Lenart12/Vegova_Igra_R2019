@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include <ctime>
 
+std::string textInput;
+
 int main()
 {
     srand(time(0));

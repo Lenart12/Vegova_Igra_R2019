@@ -21,8 +21,12 @@ private:
     SDL_Texture *land;
     static Texture worldTexture;
 public:
+    int W() {return w; }; 
+    int H() {return h; }; 
+    std::vector< std::vector<int> > Tiles() {return tiles; };
     int Type(int, int);
     Map(int, int, int, SDL_Renderer*);
+    Map(int _w, int _h, std::vector< std::vector<int> > _tiles, SDL_Renderer *renderer);
     void randomTile(int, int&, int&);
     void randomTile(int, int, int&, int&);
     void randomTile(int, int, int, int&, int&);

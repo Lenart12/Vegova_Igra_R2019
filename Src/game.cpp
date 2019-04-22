@@ -2,6 +2,7 @@
 #include <menu.h>
 
 #include <iostream>
+#include <fstream>
 #include <SDL2/SDL_image.h>
 
 Game::Game() { 
@@ -59,18 +60,26 @@ void Game::init(){
     }
 
     if(running){
-        hiscore = 0;
-        dificulty = 0;
-        level = new Map(conf->tileCntX,
-                        conf->tileCntY,
-                        conf->mapGenPasses,
-                        renderer);
-        menu = new Menu(this);
+        level = NULL;
+        entities = NULL;
+        inGame = false;
+        menu = new Menu();
     }
 }
 
 
 void Game::newGame(){
+    remove("Saves/lastReplay.bin");
+    timer = SDL_GetTicks();
+    score = 0;
+    inGame = true;
+    dificulty = 0;
+    newLevel();
+}
+
+void Game::newLevel(){
+    if(level != NULL) delete level;
+    if(entities != NULL) delete entities;
     level = new Map(conf->tileCntX, conf->tileCntY, conf->mapGenPasses, renderer);
     entities = new Entities(conf->enemyCnt,
                             conf->trashCnt,
@@ -92,41 +101,167 @@ void Game::handleEvent(){
                 case SDLK_a: entities->move(-1, 0); break;
                 case SDLK_s: entities->move(0, 1); break;
                 case SDLK_d: entities->move(1, 0); break;
-
-                case SDLK_ESCAPE: menu = new Menu(this);
-                    hiscore = 0;
+                
+                
+                case SDLK_ESCAPE: menu = new Menu();
                     dificulty = 0;
                     break;
             }
         }
     }
 }
+
+size_t strlcpy(char *dst, const char *src, size_t size)
+{
+    size_t len = 0;
+    while(size > 1 && *src)
+    {
+        *dst++ = *src++;
+        size--;
+        len++;
+    }
+    if(size > 0)
+        *dst = 0;
+    return len + strlen(src);    
+}
+
 void Game::update(){
     if(menu == NULL){
+        bool over = SDL_GetTicks() - timer > conf->gameTime * 1000;
         int ret = entities->update();
-        if(ret == -10000){
-            hiscore = 0;
-            dificulty = 0;
-            delete entities;
-            entities = NULL;
-            menu = new Menu(this);
+        std::ofstream outSave("Saves/lastReplay.bin", std::ios::app | std::ios::binary);
+        Replay::saveEntities(&outSave, entities);
+        outSave.close();
+        if(ret == -10000 || over){
+            inGame = false;
+            menu = new Menu();
         }
         else if(ret == -10001){
             dificulty += 2;
             delete entities;
-            entities = NULL;
             delete level;
-            level = NULL;
-            newGame();
+            level = new Map(conf->tileCntX, conf->tileCntY, conf->mapGenPasses, renderer);
+            entities = new Entities(conf->enemyCnt,
+                            conf->trashCnt,
+                            conf->animalCnt,
+                            conf->zaveznikCnt,
+                            dificulty,
+                            level, renderer);
         }
         else{
-            hiscore += ret;
+            score += ret;
         }
     }
-    else
-        menu->update();
-    
+    else{
+        GameState state = STATE_NOTHING;
+        if(inGame)
+            state = STATE_ACTIVE;
+        else if(!inGame && level != NULL){
+            delete level;
+            delete entities;
+            level = NULL;
+            entities = NULL;
+            state = STATE_GAME_OVER;
+        }
+        switch(menu->update(state, renderer)){
+            case MENU_INPUT_NAME:{
+                inGame = false;
+                menu = new Menu();
+                break;
+            }
+            case MENU_NEW_GAME:
+                inGame = true;
+                delete menu;
+                menu = NULL;
+                newGame();
+                break;
+            case MENU_SAVE_GAME: {
+                remove("Saves/tmp.map");
+
+                std::ofstream outSave("Saves/tmp.map", std::ios::app | std::ios::binary);
+                Replay::saveEntities(&outSave, entities);
+                outSave.close();
+
+                menu->message = "Igra shranjena";
+
+                break;
+            }
+            case MENU_LOAD_GAME: {
+                timer = SDL_GetTicks();
+                inGame = true;
+                delete level;
+                delete entities;
+                entities = new Entities(0, 0, 0, 0, 0, NULL, renderer);
+
+                std::ifstream in("Saves/tmp.map", std::ios::binary);
+                entities = Replay::loadEntites(&in, entities, renderer);
+                level = entities->getLevel();
+                in.close();
+
+                delete menu;
+                menu = NULL;
+
+                break;
+            }
+            case MENU_RESUME: {
+                inGame = true;
+                delete menu;
+                menu = NULL;
+                break;
+            }
+            case MENU_QUIT: {
+                running = false;
+                break;
+            }
+            case MENU_NOTHING: {
+                break;
+            }
+            case MENU_SAVE_RESULT: {
+                inGame = false;
+                Result r;
+                strlcpy(r.name, Input::textInput.c_str(), 15);
+                r.score = score;
+                Replay::saveResult(r);
+                break;
+            }
+            case MENU_WATCH_REPLAY:{
+                static Conf conf;
+                const int FPS = conf.gameFps;
+                const int frameDelay = 1000 / FPS;
+
+                inGame = true;
+
+                Uint32 frameStart;
+                int frameTime;
+                std::ifstream in("Saves/lastReplay.bin", std::ios::binary);
+                if(in.is_open()){
+                    while(!in.eof()){
+                        frameStart = SDL_GetTicks();
+
+                        delete level;
+                        delete entities;
+                        entities = new Entities(0, 0, 0, 0, 0, NULL, renderer);
+                        
+                        entities = Replay::loadEntites(&in, entities, renderer);
+                        level = entities->getLevel();
+                        SDL_RenderClear(renderer);
+                        level->render(renderer);
+                        entities->render(renderer);
+                        SDL_RenderPresent(renderer);
+
+
+                        frameTime = SDL_GetTicks() - frameStart;
+
+                        if(frameDelay > frameTime){
+                            SDL_Delay(frameDelay - frameTime);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
+
 
 void Game::render(){
     SDL_RenderClear(renderer);

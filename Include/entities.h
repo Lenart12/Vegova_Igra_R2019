@@ -40,6 +40,14 @@ private:
     std::vector<Collision> listEntites();
     int checkColision();
 public:
+    Player* getPlayer() {return player;};
+    Map* getLevel() {return level;};
+    int getDiff() {return difficulty;};
+    std::vector<Enemy*> getEnemies(){ return enemies;};
+    std::vector<Trash*> getTrash(){ return trash;};
+    std::vector<Animal*> getAnimals(){ return animals;};
+    std::vector<Zaveznik*> getZavezniki(){ return zavezniki;};
+    void setState(Player *_p, Map *_level, std::vector<Enemy*> _enemies, std::vector<Trash*> _trash, std::vector<Animal*> _animals, std::vector<Zaveznik*> _zavezniki, int _difficulty);
     Entities(int, int, int, int, int, Map*, SDL_Renderer*);
     void move(int, int);
     int update();

@@ -13,7 +13,6 @@ Map::Map(int _w, int _h, int passes, SDL_Renderer *renderer){
     edgeTrim();
     pass(passes);
     populate();
-    land = drawLand(renderer);
     worldTexture.loadTextures("Texture/morje1.png", renderer);
     worldTexture.loadTextures("Texture/morje2.png", renderer);
     worldTexture.loadTextures("Texture/kopno1.png", renderer);
@@ -21,6 +20,21 @@ Map::Map(int _w, int _h, int passes, SDL_Renderer *renderer){
     worldTexture.loadTextures("Texture/obala1.png", renderer);
     worldTexture.loadTextures("Texture/obala2.png", renderer);
     worldTexture.loadTextures("Texture/obala3.png", renderer);
+    land = drawLand(renderer);
+}
+
+Map::Map(int _w, int _h, std::vector< std::vector<int> > _tiles, SDL_Renderer *renderer){
+    w = _w;
+    h = _h;
+    tiles = _tiles;
+    worldTexture.loadTextures("Texture/morje1.png", renderer);
+    worldTexture.loadTextures("Texture/morje2.png", renderer);
+    worldTexture.loadTextures("Texture/kopno1.png", renderer);
+    worldTexture.loadTextures("Texture/kopno2.png", renderer);
+    worldTexture.loadTextures("Texture/obala1.png", renderer);
+    worldTexture.loadTextures("Texture/obala2.png", renderer);
+    worldTexture.loadTextures("Texture/obala3.png", renderer);
+    land = drawLand(renderer);
 }
 
 bool Map::inBounds(int x, int y){
