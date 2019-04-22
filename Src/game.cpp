@@ -6,9 +6,11 @@
 
 Game::Game() { 
     IMG_Init(IMG_INIT_PNG);
+    TTF_Init();
 }
 
 Game::~Game(){
+    TTF_Quit();
     IMG_Quit();
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
@@ -63,7 +65,7 @@ void Game::init(){
                         conf->tileCntY,
                         conf->mapGenPasses,
                         renderer);
-        menu = new Menu(hiscore);
+        menu = new Menu(this);
     }
 }
 
@@ -91,7 +93,7 @@ void Game::handleEvent(){
                 case SDLK_s: entities->move(0, 1); break;
                 case SDLK_d: entities->move(1, 0); break;
 
-                case SDLK_ESCAPE: menu = new Menu(hiscore);
+                case SDLK_ESCAPE: menu = new Menu(this);
                     hiscore = 0;
                     dificulty = 0;
                     break;
@@ -107,7 +109,7 @@ void Game::update(){
             dificulty = 0;
             delete entities;
             entities = NULL;
-            menu = new Menu(hiscore);
+            menu = new Menu(this);
         }
         else if(ret == -10001){
             dificulty += 2;
@@ -122,14 +124,14 @@ void Game::update(){
         }
     }
     else
-        menu->update(this);
+        menu->update();
     
 }
 
 void Game::render(){
     SDL_RenderClear(renderer);
-    level->render(renderer);
     if(menu == NULL){
+        level->render(renderer);
         entities->render(renderer);
     }
     else{

@@ -16,7 +16,9 @@ private:
     void populate();
     void pass(int);
     bool inBounds(int, int);
+    SDL_Texture* drawLand(SDL_Renderer*);
     std::vector< std::vector<int> > tiles;
+    SDL_Texture *land;
     static Texture worldTexture;
 public:
     int Type(int, int);

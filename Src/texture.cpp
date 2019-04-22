@@ -45,3 +45,12 @@ void Texture::renderTile(int pos_x, int pos_y, SDL_Texture *tex, SDL_Renderer *r
                     tex,
                     NULL, &Drect);
 }
+void Texture::renderTileRotation(int pos_x, int pos_y, int angle, SDL_Texture *tex, SDL_Renderer *renderer){
+    static Conf conf;
+    SDL_Rect Drect;
+    Drect.x = pos_x * conf.tileX;
+    Drect.y = pos_y * conf.tileY;
+    Drect.w = conf.tileX;
+    Drect.h = conf.tileY;
+    SDL_RenderCopyEx(renderer, tex, NULL, &Drect, angle, NULL, SDL_FLIP_NONE);
+}

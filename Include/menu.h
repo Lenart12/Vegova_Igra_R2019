@@ -7,6 +7,7 @@ class Game;
 #include <SDL2/SDL_ttf.h>
 #include <string>
 #include <vector>
+#include <functional>
 
 class TextBlock{
 public:
@@ -15,8 +16,8 @@ public:
     SDL_Color color;
     SDL_Color nColor;
     SDL_Color oColor;
-    TextBlock(std::string, SDL_Rect*, SDL_Color, SDL_Color);
-    int action;
+    std::function<void()> callbackFunction;
+    TextBlock(std::string _text, int x, int y, int w, int h, SDL_Color _nColor, SDL_Color _oColor, std::function<void()> _callbackFunction);
 };
 
 class Menu{
@@ -25,9 +26,9 @@ private:
     std::vector<TextBlock> textBlocks;
     void renderText(TextBlock*, SDL_Renderer*);
 public:
-    Menu(int);
+    Menu(Game*);
     ~Menu();
-    void update(Game*);
+    void update();
     void render(SDL_Renderer*);
 };
 

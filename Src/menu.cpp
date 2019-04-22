@@ -4,79 +4,66 @@
 
 #include <iostream>
 
-Menu::Menu(int hiscore){
+Menu::Menu(Game *game){
     static Conf conf;
-    TTF_Init();
     font = TTF_OpenFont("Texture/8bitfont.ttf", 24);
 
-    SDL_Rect *tmpR1 = new SDL_Rect;
-    SDL_Rect *tmpR2 = new SDL_Rect;
-    SDL_Rect *tmpR3 = new SDL_Rect;
-    SDL_Rect *tmpR4 = new SDL_Rect;
     SDL_Color tmpNC;
     SDL_Color tmpOC;
 
     tmpNC.a = 255;
     tmpOC.a = 255;
-
-    tmpR1->w = -1;
-    tmpR1->h = -1;
-    tmpR1->x = -1;
-    tmpR1->y = conf.height / 3 + 0 * conf.tileY;
     tmpNC.r = 255;
     tmpNC.g = 255;
     tmpNC.b = 255;
-    tmpOC.r = 255;
-    tmpOC.g = 255;
-    tmpOC.b = 255;
-    TextBlock title(conf.title, tmpR1, tmpNC, tmpOC);
-    title.action = -1;
-    textBlocks.push_back(title);
-
-
-    if(hiscore != 0){
-        tmpR2->w = -1;
-        tmpR2->h = -1;
-        tmpR2->x = -1;
-        tmpR2->y = conf.height / 3 + 1 * conf.tileY;
-        TextBlock hiScore("Rezultat " + std::to_string(hiscore), tmpR2, tmpNC, tmpOC);
-        hiScore.action = -1;
-        textBlocks.push_back(hiScore);
-    }
-
     tmpOC.r = 128;
     tmpOC.g = 128;
+    tmpOC.b = 255;
 
-    tmpR3->w = -1;
-    tmpR3->h = -1;
-    tmpR3->x = -1;
-    tmpR3->y = conf.height / 3 + 2 * conf.tileY;
-    TextBlock novaIgra("Nova igra", tmpR3, tmpNC, tmpOC);
-    novaIgra.action = 0;
-    textBlocks.push_back(novaIgra);
-    
-    tmpR4->w = -1;
-    tmpR4->h = -1;
-    tmpR4->x = -1;
-    tmpR4->y = conf.height / 3 + 3 * conf.tileY;
-    TextBlock izhod("Izhod", tmpR4, tmpNC, tmpOC);
-    izhod.action = 1;
-    textBlocks.push_back(izhod);
+    textBlocks.push_back(TextBlock(conf.title, -1, conf.height / 3 + 0 * conf.tileY, -1, -1, tmpNC, tmpNC, NULL));
+    textBlocks.push_back(
+        TextBlock(
+            "Nova Igra",
+            -1, conf.height / 3 + 2 * conf.tileY,
+            -1, -1,
+            tmpNC, tmpOC,
+            [this, game](){
+                delete this;
+                game->newGame();
+                game->setMenu(NULL);
+            }
+        )
+    );
+    textBlocks.push_back(
+        TextBlock(
+            "Izhod",
+            -1, conf.height / 3 + 3 * conf.tileY,
+            -1, -1,
+            tmpNC, tmpOC,
+            [game](){
+                game->Running(false);
+            }
+        )
+    );
 }
 Menu::~Menu(){
     TTF_CloseFont(font);
-    TTF_Quit();
 }
 
-TextBlock::TextBlock(std::string _text, SDL_Rect *_destR, SDL_Color _nColor, SDL_Color _oColor){
+TextBlock::TextBlock(std::string _text, int x, int y, int w, int h, SDL_Color _nColor, SDL_Color _oColor, std::function<void()> _callbackFunction){
     text = _text;
-    destR = _destR;
+    destR = new SDL_Rect();
+    destR->x = x;
+    destR->y = y;
+    destR->w = w;
+    destR->h = h;
     nColor = _nColor;
     oColor = _oColor;
     color = nColor;
+    callbackFunction = _callbackFunction;
 }
 
-void Menu::update(Game *game){
+void Menu::update(){
     int x, y;
     SDL_PumpEvents();
     bool clicked = (SDL_GetMouseState(&x, &y) & SDL_BUTTON(SDL_BUTTON_LEFT));
@@ -86,18 +73,8 @@ void Menu::update(Game *game){
            r.y < y && r.y + r.h > y){
             i->color = i->oColor;
             if(clicked){
-                switch (i->action)
-                {
-                    case 0:
-                        delete this;
-                        game->newGame();
-                        game->setMenu(NULL);
-                        return;
-
-                    case 1:
-                        delete game;
-                        return;
-                }
+                if(i->callbackFunction != NULL)
+                    i->callbackFunction();
             }
         }
         else{
@@ -107,6 +84,8 @@ void Menu::update(Game *game){
 }
 
 void Menu::render(SDL_Renderer *renderer){
+    SDL_SetRenderDrawColor(renderer, 18, 35, 95, 255);
+    SDL_RenderFillRect(renderer, NULL);
     for(std::vector< TextBlock > :: iterator i = textBlocks.begin(); i != textBlocks.end(); i++){
         renderText(&*i, renderer);
     }
