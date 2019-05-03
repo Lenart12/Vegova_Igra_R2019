@@ -1,7 +1,7 @@
 #include <actors.h>
 #include <conf.h>
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 void BaseActor::X(int _pos_x) {
     if(textureIndex % 2 == 0 &&  _pos_x < pos_x)

@@ -9,7 +9,7 @@ public:
     int textureIndex;
     int pos_x;
     int pos_y;
-    BaseActor() {};
+	BaseActor() { textureIndex = -1; pos_x = -1; pos_y = -1; };
     BaseActor(int, int);
 
     virtual void X(int);
@@ -27,8 +27,8 @@ class Player : public BaseActor{
 public:
     int ladja_x;
     int ladja_y;
-    Player(int startX, int startY) : BaseActor(startX, startY) { };
-    Player() : BaseActor() { };
+    Player(int startX, int startY) : BaseActor(startX, startY) { ladja_x = -1; ladja_y = -1; };
+	Player() : BaseActor() { ladja_x = -1; ladja_y = -1; };
     virtual void update(Map*);
 };
 

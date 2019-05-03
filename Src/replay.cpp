@@ -137,8 +137,11 @@ void Replay::saveResult(Result r){
             out.write((char*)&r, sizeof(r));
         }
     }
+	out.close();
     remove("Saves/results.bin");
-    rename("Saves/tmpResults.bin", "Saves/results.bin");
+	if (rename("Saves/tmpResults.bin", "Saves/results.bin") != 0) {
+		std::cout << "Can't rename file\n";
+	}
 }
 std::vector<Result> Replay::loadResult(int limit){
     Result r;

@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <fstream>
-#include <SDL2/SDL_image.h>
+#include <SDL_image.h>
 
 Game::Game() { 
     IMG_Init(IMG_INIT_PNG);

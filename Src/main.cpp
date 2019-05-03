@@ -7,7 +7,7 @@
 
 std::string textInput;
 
-int main()
+int main(int argc, char* argv[])
 {
     srand(time(0));
     static Conf conf;
