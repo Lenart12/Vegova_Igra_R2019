@@ -73,8 +73,5 @@
     <None Include="saves\lastReplay.bin">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="saves\results.bin">
-      <Filter>Resource Files</Filter>
-    </None>
   </ItemGroup>
 </Project>

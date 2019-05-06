@@ -18,9 +18,9 @@ void Texture::loadTextures(const char *textureLocation, SDL_Renderer *renderer){
     if(tmp != NULL)
         textures.push_back(tmp);
     else {
-
         textures.push_back(getPlaceholder(rand() % 256, rand() % 256, rand() % 256, renderer));
         std::cout << "Cant load texture: " << _getcwd(NULL, 0) << '\\' << textureLocation << std::endl;
+		std::cout << "Reason: " << SDL_GetError() << '\n';
     }
 }
 
@@ -51,6 +51,14 @@ void Texture::renderTile(int pos_x, int pos_y, SDL_Texture *tex, SDL_Renderer *r
     Drect.y = pos_y * conf.tileY;
     Drect.w = conf.tileX;
     Drect.h = conf.tileY;
+	if (pos_x < 0)
+		std::cout << "ALERT: Rendering outside bounds -x\n";
+	if (pos_x > conf.tileCntX)
+		std::cout << "ALERT: Rendering outside bounds +x\n";
+	if (pos_y < 0)
+		std::cout << "ALERT: Rendering outside bounds -y\n";
+	if (pos_y > conf.tileCntY)
+		std::cout << "ALERT: Rendering outside bounds +y\n";
     SDL_RenderCopy(renderer,
                     tex,
                     NULL, &Drect);

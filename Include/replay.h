@@ -9,7 +9,7 @@
 #include <vector>
 
 struct Result{
-    char name[8];
+    char name[15];
     int score;
 };
 
@@ -36,6 +36,8 @@ namespace Replay{
         return vec;
     }
 
+	void savePlayer(std::ofstream *out, Player* player);
+	Player* loadPlayer(std::ifstream* in);
     void saveEntities(std::ofstream *out, Entities *_entities);
     Entities* loadEntites(std::ifstream *in, Entities *_entities, SDL_Renderer *renderer);
     void saveMap(std::ofstream *out, Map *_level);

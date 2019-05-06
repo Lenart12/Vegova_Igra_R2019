@@ -5,6 +5,7 @@
 #include <iostream>
 
 Menu::Menu(){
+	lastClick = SDL_GetTicks();
     font = TTF_OpenFont("Texture/8bitfont.ttf", 24);
     loadPage(PAGE_START);
 }
@@ -101,6 +102,12 @@ TextBlock::TextBlock(std::string _text, int x, int y, int w, int h, SDL_Color _n
 ReturnAction Menu::update(GameState state, SDL_Renderer *renderer){
     int x, y;
     bool clicked = (SDL_GetMouseState(&x, &y) & SDL_BUTTON(SDL_BUTTON_LEFT));
+	int now = SDL_GetTicks();
+	if (clicked) {
+		if (now - lastClick < 300)
+			clicked = false;
+		lastClick = now;
+	}
     if(currentState != state){    
         switch(state){
             case STATE_ACTIVE:{
@@ -145,6 +152,7 @@ ReturnAction Menu::update(GameState state, SDL_Renderer *renderer){
         SDL_StartTextInput();
         std::string input = "";
         while(true){
+			now = SDL_GetTicks();
             SDL_GetMouseState(&x, &y);
             SDL_Event event;
             clicked = false;
@@ -163,7 +171,11 @@ ReturnAction Menu::update(GameState state, SDL_Renderer *renderer){
                     }
                 }
                 else if(event.type == SDL_MOUSEBUTTONDOWN){
-                    clicked = true;
+					clicked = true;
+					if (now - lastClick < 300)
+						clicked = false;
+					lastClick = now;
+
                 }
             }
             Input::textInput = input;
@@ -234,6 +246,7 @@ void Menu::renderText(TextBlock *textBlock, SDL_Renderer *renderer){
         }
         SDL_RenderCopy(renderer, tex, NULL, textBlock->destR);
         SDL_FreeSurface(txtSurface);
+		SDL_DestroyTexture(tex);
     }
     if(swap){
         textBlock->text = "%message%";

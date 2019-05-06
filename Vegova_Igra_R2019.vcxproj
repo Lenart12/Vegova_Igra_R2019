@@ -130,7 +130,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="saves\lastReplay.bin" />
-    <None Include="saves\results.bin" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

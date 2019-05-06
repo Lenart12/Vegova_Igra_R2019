@@ -49,6 +49,7 @@ public:
 
 class Menu{
 private:
+	int lastClick;
     TTF_Font *font;
     std::vector<TextBlock> textBlocks;
     void renderText(TextBlock*, SDL_Renderer*);

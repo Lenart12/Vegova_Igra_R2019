@@ -3,6 +3,27 @@
 
 std::string Input::textInput = "";
 
+
+void Replay::savePlayer(std::ofstream* out, Player* player)
+{
+	out->write((char*)&(player->pos_x), sizeof(int));
+	out->write((char*)&(player->pos_y), sizeof(int));
+	out->write((char*)&(player->ladja_x), sizeof(int));
+	out->write((char*)&(player->ladja_y), sizeof(int));
+	out->write((char*)&(player->textureIndex), sizeof(int));
+}
+
+Player* Replay::loadPlayer(std::ifstream* in)
+{
+	Player* p = new Player();
+	in->read((char*)&(p->pos_x), sizeof(int));
+	in->read((char*)&(p->pos_y), sizeof(int));
+	in->read((char*)&(p->ladja_x), sizeof(int));
+	in->read((char*)&(p->ladja_y), sizeof(int));
+	in->read((char*)&(p->textureIndex), sizeof(int));
+	return p;
+}
+
 void Replay::saveEntities(std::ofstream *out, Entities *_entities){
     Player *p = _entities->getPlayer();
     std::vector<Enemy*> enemies = _entities->getEnemies();
