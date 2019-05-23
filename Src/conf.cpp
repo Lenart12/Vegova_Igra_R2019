@@ -1,6 +1,6 @@
 #include <conf.h>
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <fstream>
 #include <string>
 #include <iostream>
@@ -13,7 +13,7 @@ std::map<std::string, int> loadCSV(){
     for(std::string line; getline(csv, line); ){
         int mid = line.find(',');
         std::string key = line.substr(0, mid),
-                    value = line.erase(0, mid + 1);
+                    value = line.erase(0, (__int64)mid + 1);
         int iValue = std::atoi(value.c_str());
         mapa[key] = iValue;
     }

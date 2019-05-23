@@ -3,8 +3,8 @@
 
 class Game;
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+#include <SDL.h>
+#include <SDL_ttf.h>
 #include <string>
 #include <vector>
 #include <functional>
@@ -49,6 +49,7 @@ public:
 
 class Menu{
 private:
+	int lastClick;
     TTF_Font *font;
     std::vector<TextBlock> textBlocks;
     void renderText(TextBlock*, SDL_Renderer*);

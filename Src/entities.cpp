@@ -9,7 +9,7 @@ Entities::Entities(int enemyCnt, int trashCnt, int animalCnt, int zaveznikCnt, i
     int x, y;
 
     level = _level;
-
+	player = NULL;
     difficulty = _difficulty;
 
     if(level != NULL){
@@ -37,27 +37,27 @@ Entities::Entities(int enemyCnt, int trashCnt, int animalCnt, int zaveznikCnt, i
         }
     }
     
-    playerTexture.loadTextures("Texture/player1.png", renderer);
-    playerTexture.loadTextures("Texture/player2.png", renderer);
-    playerTexture.loadTextures("Texture/ladja1.png", renderer);
-    playerTexture.loadTextures("Texture/ladja2.png", renderer);
+    playerTexture.loadTextures("Texture\\player1.png", renderer);
+    playerTexture.loadTextures("Texture\\player2.png", renderer);
+    playerTexture.loadTextures("Texture\\ladja1.png", renderer);
+    playerTexture.loadTextures("Texture\\ladja2.png", renderer);
 
-    enemyTexture.loadTextures("Texture/enemy1.png", renderer);
-    enemyTexture.loadTextures("Texture/enemy2.png", renderer);
+    enemyTexture.loadTextures("Texture\\enemy1.png", renderer);
+    enemyTexture.loadTextures("Texture\\enemy2.png", renderer);
 
-    trashTexture.loadTextures("Texture/trash1.png", renderer);
-    trashTexture.loadTextures("Texture/trash2.png", renderer);
+    trashTexture.loadTextures("Texture\\trash1.png", renderer);
+    trashTexture.loadTextures("Texture\\trash2.png", renderer);
 
-    animalTexture.loadTextures("Texture/rakec1.png", renderer);
-    animalTexture.loadTextures("Texture/rakec2.png", renderer);
+    animalTexture.loadTextures("Texture\\rakec1.png", renderer);
+    animalTexture.loadTextures("Texture\\rakec2.png", renderer);
 
-    zaveznikTexture.loadTextures("Texture/zaveznik1.png", renderer);
-    zaveznikTexture.loadTextures("Texture/zaveznik2.png", renderer);
-    zaveznikTexture.loadTextures("Texture/zaveznik3.png", renderer);
-    zaveznikTexture.loadTextures("Texture/zaveznik4.png", renderer);
+    zaveznikTexture.loadTextures("Texture\\zaveznik1.png", renderer);
+    zaveznikTexture.loadTextures("Texture\\zaveznik2.png", renderer);
+    zaveznikTexture.loadTextures("Texture\\zaveznik3.png", renderer);
+    zaveznikTexture.loadTextures("Texture\\zaveznik4.png", renderer);
 
-    fog.loadTextures("Texture/fog1.png", renderer);
-    fog.loadTextures("Texture/fog2.png", renderer);
+    fog.loadTextures("Texture\\fog1.png", renderer);
+    fog.loadTextures("Texture\\fog2.png", renderer);
 }
 
 int Entities::update(){
@@ -153,7 +153,7 @@ void Entities::render(SDL_Renderer *renderer){
             {
                 int alpha;
 
-                alpha = sqrt(pow(x - player->X(), 2) + pow(y - player->Y(), 2)) * conf.fogDist + (difficulty * 16);
+                alpha = sqrt(pow(x - player->X(), 2) + pow(y - player->Y(), 2)) * conf.fogDist + ((__int64)difficulty * 16);
                 if(alpha > 255)
                     alpha = 255;
 
@@ -217,7 +217,7 @@ void Entities::splitSelector(std::string selector, char& t1, int& i1, char& t2, 
         else{
             i1 = -1;
         }
-        selector = selector.erase(0, mid + 1);
+        selector = selector.erase(0, (__int64)mid + 1);
         t2 = selector[0];
         selector = selector.erase(0, 1);
         if(selector.size() != 0){

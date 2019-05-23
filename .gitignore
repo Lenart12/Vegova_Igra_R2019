@@ -1,2 +1,5 @@
 Build
 .vscode/ipch
+*.ipch
+/x64/Debug
+*.opendb

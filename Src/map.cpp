@@ -13,13 +13,13 @@ Map::Map(int _w, int _h, int passes, SDL_Renderer *renderer){
     edgeTrim();
     pass(passes);
     populate();
-    worldTexture.loadTextures("Texture/morje1.png", renderer);
-    worldTexture.loadTextures("Texture/morje2.png", renderer);
-    worldTexture.loadTextures("Texture/kopno1.png", renderer);
-    worldTexture.loadTextures("Texture/kopno2.png", renderer);
-    worldTexture.loadTextures("Texture/obala1.png", renderer);
-    worldTexture.loadTextures("Texture/obala2.png", renderer);
-    worldTexture.loadTextures("Texture/obala3.png", renderer);
+    worldTexture.loadTextures("Texture\\morje1.png", renderer);
+    worldTexture.loadTextures("Texture\\morje2.png", renderer);
+    worldTexture.loadTextures("Texture\\kopno1.png", renderer);
+    worldTexture.loadTextures("Texture\\kopno2.png", renderer);
+    worldTexture.loadTextures("Texture\\obala1.png", renderer);
+    worldTexture.loadTextures("Texture\\obala2.png", renderer);
+    worldTexture.loadTextures("Texture\\obala3.png", renderer);
     land = drawLand(renderer);
 }
 
@@ -27,13 +27,13 @@ Map::Map(int _w, int _h, std::vector< std::vector<int> > _tiles, SDL_Renderer *r
     w = _w;
     h = _h;
     tiles = _tiles;
-    worldTexture.loadTextures("Texture/morje1.png", renderer);
-    worldTexture.loadTextures("Texture/morje2.png", renderer);
-    worldTexture.loadTextures("Texture/kopno1.png", renderer);
-    worldTexture.loadTextures("Texture/kopno2.png", renderer);
-    worldTexture.loadTextures("Texture/obala1.png", renderer);
-    worldTexture.loadTextures("Texture/obala2.png", renderer);
-    worldTexture.loadTextures("Texture/obala3.png", renderer);
+    worldTexture.loadTextures("Texture\\morje1.png", renderer);
+    worldTexture.loadTextures("Texture\\morje2.png", renderer);
+    worldTexture.loadTextures("Texture\\kopno1.png", renderer);
+    worldTexture.loadTextures("Texture\\kopno2.png", renderer);
+    worldTexture.loadTextures("Texture\\obala1.png", renderer);
+    worldTexture.loadTextures("Texture\\obala2.png", renderer);
+    worldTexture.loadTextures("Texture\\obala3.png", renderer);
     land = drawLand(renderer);
 }
 
@@ -72,11 +72,11 @@ void Map::seed(){
 void Map::edgeTrim(){
     for(int x = 0; x < w; x++){
         tiles.at(x).at(0) = 0;
-        tiles.at(x).at(h - 1) = 0;
+        tiles.at(x).at((__int64)h - 1) = 0;
     }    
     for(int y = 0; y < h; y++){
         tiles.at(0).at(y) = 0;
-        tiles.at(w - 1).at(y) = 0;
+        tiles.at((__int64)w - 1).at(y) = 0;
     }    
 }
 
